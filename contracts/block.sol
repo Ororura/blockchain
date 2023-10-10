@@ -25,7 +25,6 @@ contract CryptoMonster is ERC20("CryptoMonster", "CMON") {
     constructor() {
         owner = msg.sender;
         _mint(owner, totalSupp);
-
         _transfer(owner, address(0xAb8483F64d9C6d1EcF9b849Ae677dD3315835cb2), SEED_ALLOCATION * 3 / 10); // investor1
         _transfer(owner, address(0x4B20993Bc481177ec7E8f571ceCaE8A9e22C02db), SEED_ALLOCATION * 4 / 10); // investor2
         _transfer(owner, address(0x78731D3Ca6b7E34aC0F824c42a7cC18A495cabaB), SEED_ALLOCATION * 2 / 10); // bestFriend

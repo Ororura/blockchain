@@ -63,19 +63,6 @@
 			{
 				"inputs": [
 					{
-						"internalType": "address[]",
-						"name": "users",
-						"type": "address[]"
-					}
-				],
-				"name": "addToWhitelist",
-				"outputs": [],
-				"stateMutability": "nonpayable",
-				"type": "function"
-			},
-			{
-				"inputs": [
-					{
 						"internalType": "address",
 						"name": "owner",
 						"type": "address"
@@ -124,6 +111,24 @@
 			{
 				"inputs": [
 					{
+						"internalType": "uint256",
+						"name": "_idTicket",
+						"type": "uint256"
+					},
+					{
+						"internalType": "bool",
+						"name": "status",
+						"type": "bool"
+					}
+				],
+				"name": "approveWhiteList",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
 						"internalType": "address",
 						"name": "account",
 						"type": "address"
@@ -144,12 +149,18 @@
 				"inputs": [
 					{
 						"internalType": "uint256",
-						"name": "amount",
+						"name": "_amount",
 						"type": "uint256"
 					}
 				],
-				"name": "buyPrivateTokens",
-				"outputs": [],
+				"name": "buyPrivateToken",
+				"outputs": [
+					{
+						"internalType": "string",
+						"name": "",
+						"type": "string"
+					}
+				],
 				"stateMutability": "payable",
 				"type": "function"
 			},
@@ -157,11 +168,11 @@
 				"inputs": [
 					{
 						"internalType": "uint256",
-						"name": "amount",
+						"name": "_amount",
 						"type": "uint256"
 					}
 				],
-				"name": "buyPublicTokens",
+				"name": "buyPublicToken",
 				"outputs": [],
 				"stateMutability": "payable",
 				"type": "function"
@@ -228,6 +239,19 @@
 				"type": "function"
 			},
 			{
+				"inputs": [
+					{
+						"internalType": "string",
+						"name": "_name",
+						"type": "string"
+					}
+				],
+				"name": "makePrivateReq",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
 				"inputs": [],
 				"name": "name",
 				"outputs": [
@@ -255,7 +279,7 @@
 			},
 			{
 				"inputs": [],
-				"name": "privateSaleEndTime",
+				"name": "privateCoins",
 				"outputs": [
 					{
 						"internalType": "uint256",
@@ -268,7 +292,7 @@
 			},
 			{
 				"inputs": [],
-				"name": "publicSaleEndTime",
+				"name": "pubCoins",
 				"outputs": [
 					{
 						"internalType": "uint256",
@@ -282,26 +306,30 @@
 			{
 				"inputs": [
 					{
-						"internalType": "address[]",
-						"name": "users",
-						"type": "address[]"
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
 					}
 				],
-				"name": "removeFromWhitelist",
-				"outputs": [],
-				"stateMutability": "nonpayable",
-				"type": "function"
-			},
-			{
-				"inputs": [],
-				"name": "startPublicSale",
-				"outputs": [],
+				"name": "requests",
+				"outputs": [
+					{
+						"internalType": "string",
+						"name": "name",
+						"type": "string"
+					},
+					{
+						"internalType": "address",
+						"name": "usrAddress",
+						"type": "address"
+					}
+				],
 				"stateMutability": "view",
 				"type": "function"
 			},
 			{
 				"inputs": [],
-				"name": "startTime",
+				"name": "seedCoins",
 				"outputs": [
 					{
 						"internalType": "uint256",
@@ -320,6 +348,71 @@
 						"internalType": "string",
 						"name": "",
 						"type": "string"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "timeDif",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "timeNow",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "timeStart",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "timeSystem",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "totalCoins",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
 					}
 				],
 				"stateMutability": "view",
@@ -395,34 +488,35 @@
 				"inputs": [
 					{
 						"internalType": "address",
-						"name": "recipient",
+						"name": "",
 						"type": "address"
-					},
-					{
-						"internalType": "uint256",
-						"name": "amount",
-						"type": "uint256"
 					}
 				],
-				"name": "transferPublicTokens",
-				"outputs": [],
-				"stateMutability": "nonpayable",
+				"name": "userRole",
+				"outputs": [
+					{
+						"internalType": "enum CryptoMonster.Role",
+						"name": "",
+						"type": "uint8"
+					}
+				],
+				"stateMutability": "view",
 				"type": "function"
 			},
 			{
 				"inputs": [
 					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"name": "whiteList",
+				"outputs": [
+					{
 						"internalType": "address",
 						"name": "",
 						"type": "address"
-					}
-				],
-				"name": "whitelist",
-				"outputs": [
-					{
-						"internalType": "bool",
-						"name": "",
-						"type": "bool"
 					}
 				],
 				"stateMutability": "view",
@@ -484,7 +578,7 @@
 	},
 	"settings": {
 		"compilationTarget": {
-			"contracts/block.sol": "CryptoMonster"
+			"contracts/block2.sol": "CryptoMonster"
 		},
 		"evmVersion": "shanghai",
 		"libraries": {},
@@ -530,12 +624,12 @@
 				"dweb:/ipfs/QmRK2Y5Yc6BK7tGKkgsgn3aJEQGi5aakeSPZvS65PV8Xp3"
 			]
 		},
-		"contracts/block.sol": {
-			"keccak256": "0x291af1192fa3233febcfe188911efadfa0d7dd108c31b9ac156b854ffdb79d60",
+		"contracts/block2.sol": {
+			"keccak256": "0x022f24b3f9feac700dade02e7c66e2b0fc18aa2a26f57c62eb4b88f77e466d48",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://5040e4fffe91d88d93fc657d105a1092b265d475c1e5dbd2baeee8c7576484f8",
-				"dweb:/ipfs/QmY5QyYeTkf52aRcnNiLAaGo39HpvmZkiP9zYNYCHo1n76"
+				"bzz-raw://d94117dd69190d20f52398879e1e2c8f49cf993604be626ce6c5e0a5bb72a677",
+				"dweb:/ipfs/QmPtKWWhTeBh4utr6cVEHR2o5imsRzenvJNNPQwVPHL75f"
 			]
 		}
 	},
