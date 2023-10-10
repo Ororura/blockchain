@@ -179,6 +179,19 @@
 			},
 			{
 				"inputs": [],
+				"name": "checkTime",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [],
 				"name": "decimals",
 				"outputs": [
 					{
@@ -625,11 +638,19 @@
 			]
 		},
 		"contracts/block2.sol": {
-			"keccak256": "0x022f24b3f9feac700dade02e7c66e2b0fc18aa2a26f57c62eb4b88f77e466d48",
+			"keccak256": "0x61abdcca4a36ac51c1466dd8efc3c337d319f512c9864432117f7d5973872888",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://d94117dd69190d20f52398879e1e2c8f49cf993604be626ce6c5e0a5bb72a677",
-				"dweb:/ipfs/QmPtKWWhTeBh4utr6cVEHR2o5imsRzenvJNNPQwVPHL75f"
+				"bzz-raw://9809a9569621c84b0f2b82fe588c769632a57ad4697de2e408f964f75550d8f9",
+				"dweb:/ipfs/QmZxQjwDb6qaGuWDjnSnQUHuTJkEFFzJMqGbHaZbvbM4Wo"
+			]
+		},
+		"hardhat/console.sol": {
+			"keccak256": "0x7434453e6d3b7d0e5d0eb7846ffdbc27f0ccf3b163591263739b628074dc103a",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://49355f780520494d1d5a0f01858385e51bb5280ce0ecfb960f16995065dca395",
+				"dweb:/ipfs/QmSwJ6C5QLz6xKeQZS8wbwjU1KxRFTYfwbGmtzisd5sRW4"
 			]
 		}
 	},

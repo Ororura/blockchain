@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.21;
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
+import "hardhat/console.sol";
 
 contract CryptoMonster is ERC20("CryptoMonster", "CMON") {
     uint public totalCoins = 10000000 * 10 ** 12;
@@ -33,7 +34,8 @@ contract CryptoMonster is ERC20("CryptoMonster", "CMON") {
         userRole[0x4B20993Bc481177ec7E8f571ceCaE8A9e22C02db] = Role.Provider;
         timeStart = block.timestamp;
         timeNow = timeStart;
-        timeDif = timeStart;
+        timeDif = 0;
+        timeSystem = timeStart;
         _mint(msg.sender, totalCoins);
         _transfer(msg.sender,0x78731D3Ca6b7E34aC0F824c42a7cC18A495cabaB , 300000 * 10 ** 12);
         seedCoins = seedCoins - 300000 * 10 ** 12;
@@ -46,6 +48,13 @@ contract CryptoMonster is ERC20("CryptoMonster", "CMON") {
     modifier AccesControl(Role _role) {
         require(userRole[msg.sender] == _role, unicode"Ваша роль не позволяет это использовать");
         _;
+    }
+
+    function checkTime() public returns(uint){
+        timeSystem = block.timestamp + timeDif;
+        uint dif = timeSystem - timeStart;
+        console.log(dif);
+        return dif;
     }
 
     function makePrivateReq(string memory _name) public {
