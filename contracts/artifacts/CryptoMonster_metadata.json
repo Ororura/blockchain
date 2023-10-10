@@ -178,6 +178,19 @@
 				"type": "function"
 			},
 			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "_newPrice",
+						"type": "uint256"
+					}
+				],
+				"name": "changePublicPrice",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
 				"inputs": [],
 				"name": "checkTime",
 				"outputs": [
@@ -200,7 +213,7 @@
 						"type": "uint8"
 					}
 				],
-				"stateMutability": "view",
+				"stateMutability": "pure",
 				"type": "function"
 			},
 			{
@@ -230,6 +243,24 @@
 			{
 				"inputs": [
 					{
+						"internalType": "uint256",
+						"name": "_amount",
+						"type": "uint256"
+					},
+					{
+						"internalType": "address",
+						"name": "_user",
+						"type": "address"
+					}
+				],
+				"name": "giveCoinsFromOwner",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
 						"internalType": "address",
 						"name": "spender",
 						"type": "address"
@@ -249,6 +280,19 @@
 					}
 				],
 				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "leftBalOwner",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
 				"type": "function"
 			},
 			{
@@ -291,6 +335,24 @@
 				"type": "function"
 			},
 			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "_amount",
+						"type": "uint256"
+					},
+					{
+						"internalType": "address",
+						"name": "_user",
+						"type": "address"
+					}
+				],
+				"name": "payReward",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
 				"inputs": [],
 				"name": "privateCoins",
 				"outputs": [
@@ -306,6 +368,19 @@
 			{
 				"inputs": [],
 				"name": "pubCoins",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "publicPrice",
 				"outputs": [
 					{
 						"internalType": "uint256",
@@ -351,6 +426,19 @@
 					}
 				],
 				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "_minutes",
+						"type": "uint256"
+					}
+				],
+				"name": "skipTime",
+				"outputs": [],
+				"stateMutability": "nonpayable",
 				"type": "function"
 			},
 			{
@@ -498,6 +586,13 @@
 				"type": "function"
 			},
 			{
+				"inputs": [],
+				"name": "updateLeftBalOwner",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
 				"inputs": [
 					{
 						"internalType": "address",
@@ -638,11 +733,11 @@
 			]
 		},
 		"contracts/block2.sol": {
-			"keccak256": "0x61abdcca4a36ac51c1466dd8efc3c337d319f512c9864432117f7d5973872888",
+			"keccak256": "0x1d74f16ae9ddf62c46ae9e9386cdf8ea1b96ec951e0ba416c09e5289b77c2209",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://9809a9569621c84b0f2b82fe588c769632a57ad4697de2e408f964f75550d8f9",
-				"dweb:/ipfs/QmZxQjwDb6qaGuWDjnSnQUHuTJkEFFzJMqGbHaZbvbM4Wo"
+				"bzz-raw://fa1d920a27cb3e78ae6edc1677f911862803e290591e45f621d897d1ae904107",
+				"dweb:/ipfs/QmQwvDgBNfehmQRVHYwqZQkysQLcYVTv5dDvJMz5RTf6K3"
 			]
 		},
 		"hardhat/console.sol": {
