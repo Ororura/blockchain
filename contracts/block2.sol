@@ -20,27 +20,36 @@ contract CryptoMonster is ERC20("CryptoMonster", "CMON") {
     uint private  timeSystem;
     address private  owner;
 
-    enum Role {User, Private, Public}
+    enum Role {User, Private, Public, Owner}
 
     struct Ticket {
         string name;
         address usrAddress;
     }
 
+    struct User {
+        string name;
+        string login;
+        Role role;
+        address adr;
+    }
 
-    mapping(address => Role) private userRole;
+
+    mapping(address => User) private users;
+    mapping(address => bytes32) public passwords;
     Ticket[] private requests;
     address[] private whiteList;
 
     //Shanghai
     constructor() {
         owner = msg.sender;
+        users[msg.sender] = User("owner", "owner", Role.Owner, msg.sender);
         timeStart = block.timestamp;
         timeSystem = timeStart;
         _mint(msg.sender, totalCoins);
 
-        userRole[0xAb8483F64d9C6d1EcF9b849Ae677dD3315835cb2] = Role.Private;
-        userRole[0x4B20993Bc481177ec7E8f571ceCaE8A9e22C02db] = Role.Public;
+        users[0xAb8483F64d9C6d1EcF9b849Ae677dD3315835cb2] = User("private", "private", Role.Private, 0xAb8483F64d9C6d1EcF9b849Ae677dD3315835cb2);
+        users[0x4B20993Bc481177ec7E8f571ceCaE8A9e22C02db] = User("public", "public", Role.Public, 0xAb8483F64d9C6d1EcF9b849Ae677dD3315835cb2);
 
         _transfer(msg.sender,0x78731D3Ca6b7E34aC0F824c42a7cC18A495cabaB , 300000 * 10 ** decimals());
         seedCoins = seedCoins - 300000 * 10 ** decimals();
@@ -51,13 +60,20 @@ contract CryptoMonster is ERC20("CryptoMonster", "CMON") {
     }
 
     modifier AccesControl(Role _role) {
-        require(userRole[msg.sender] == _role, unicode"Ваша роль не позволяет это использовать");
+        require(users[msg.sender].role == _role, unicode"Ваша роль не позволяет это использовать");
         _;
     }
 
-    modifier OnlyOwner() {
-        require(msg.sender == owner, unicode"Вы не владелец контракта");
-        _;
+    function registration(string memory _name, string memory _password, string memory _login) external {
+        users[msg.sender] = User(_name, _login, Role.User, msg.sender);
+        passwords[msg.sender] = keccak256(abi.encode(_password));
+    }
+
+    function login(string memory _login, string memory _password) external view returns(User memory) {
+        string memory storedLogin = users[msg.sender].login;
+        require(keccak256(abi.encode(_login)) == keccak256(abi.encode(storedLogin)));
+        require(keccak256(abi.encode(_password)) == passwords[msg.sender]);
+        return users[msg.sender];
     }
 
     function decimals() public pure override returns (uint8) {
@@ -66,7 +82,7 @@ contract CryptoMonster is ERC20("CryptoMonster", "CMON") {
 
     function checkTime() public returns(uint){
         timeSystem = block.timestamp + timeDif;
-        uint timeCycle = (timeSystem - timeStart)/60;
+        uint timeCycle = (timeSystem - timeStart) / 60;
         console.log(timeCycle);
         return timeCycle;
     }
@@ -84,7 +100,7 @@ contract CryptoMonster is ERC20("CryptoMonster", "CMON") {
         timeDif += _minutes * 60;
     }
 
-    function giveCoinsFromOwner(uint _amount, address _user) external OnlyOwner() {
+    function giveCoinsFromOwner(uint _amount, address _user) external AccesControl(Role.Owner) {
         require(leftBalOwner > 0, unicode"У вас нет остаточных коинов");
         _transfer(msg.sender, _user, _amount * 10 **decimals());
     }

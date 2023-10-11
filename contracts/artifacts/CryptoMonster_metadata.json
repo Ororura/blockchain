@@ -280,6 +280,52 @@
 				"inputs": [
 					{
 						"internalType": "string",
+						"name": "_login",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "_password",
+						"type": "string"
+					}
+				],
+				"name": "login",
+				"outputs": [
+					{
+						"components": [
+							{
+								"internalType": "string",
+								"name": "name",
+								"type": "string"
+							},
+							{
+								"internalType": "string",
+								"name": "login",
+								"type": "string"
+							},
+							{
+								"internalType": "enum CryptoMonster.Role",
+								"name": "role",
+								"type": "uint8"
+							},
+							{
+								"internalType": "address",
+								"name": "adr",
+								"type": "address"
+							}
+						],
+						"internalType": "struct CryptoMonster.User",
+						"name": "",
+						"type": "tuple"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "string",
 						"name": "_name",
 						"type": "string"
 					}
@@ -305,6 +351,25 @@
 			{
 				"inputs": [
 					{
+						"internalType": "address",
+						"name": "",
+						"type": "address"
+					}
+				],
+				"name": "passwords",
+				"outputs": [
+					{
+						"internalType": "bytes32",
+						"name": "",
+						"type": "bytes32"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
 						"internalType": "uint256",
 						"name": "_amount",
 						"type": "uint256"
@@ -316,6 +381,29 @@
 					}
 				],
 				"name": "payReward",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "string",
+						"name": "_name",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "_password",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "_login",
+						"type": "string"
+					}
+				],
+				"name": "registration",
 				"outputs": [],
 				"stateMutability": "nonpayable",
 				"type": "function"
@@ -522,11 +610,11 @@
 			]
 		},
 		"contracts/block2.sol": {
-			"keccak256": "0x4b8444be669d7fc5746df6d0be9baf8838cb610e384753aad69c1be0497464e5",
+			"keccak256": "0x780877049339c9e0a928de3b646ab86a7768b1f2fbfb245235996f37a378d306",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://4396f25bd990bc16173130731d45c50d0034fa1d53993fc0650b50bd06f6619e",
-				"dweb:/ipfs/QmQqj9AyLaSHh9Z1rbg6xCniv23H2ryPjtMhedh5i183fM"
+				"bzz-raw://132fe86c93affc9920e2d824e7fdc57ea0f9aa29b2f7a2ebac1fa817d2d14876",
+				"dweb:/ipfs/QmUZ2rdtqWTTWrNUnGw9z1asUgXqgsuA8ZCTWyFBBbi1VB"
 			]
 		},
 		"hardhat/console.sol": {
