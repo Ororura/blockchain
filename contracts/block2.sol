@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: MIT
 
 // Сделать функционал передачи оставшихся коинов; Сделать переводы оставшихся коинов на leftBalOwner.
+// Сделать покупку токенов одной функцией
+
 pragma solidity ^0.8.21;
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "hardhat/console.sol";
@@ -121,7 +123,7 @@ contract CryptoMonster is ERC20("CryptoMonster", "CMON") {
                 isWhiteListed = true;
             }
         }
-        require(isWhiteListed, unicode"Вас нет в WhiteList");
+        require(isWhiteListed, unicode"Free sale not started");
         _transfer(owner, msg.sender, _amount * 10 ** decimals());
         privateCoins -= _amount * 10 ** decimals();
         payable(msg.sender).transfer(_amount * 750000000000000);
