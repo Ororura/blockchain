@@ -109,7 +109,7 @@ contract CryptoMonster is ERC20("CryptoMonster", "CMON") {
         }
     }
 
-    function buyPrivateToken(uint _amount) public payable returns(string memory) {
+    function buyPrivateToken(uint _amount) public payable {
         require(checkTime() >= 5, unicode"Приватная фаза ещё не началась");
         require(checkTime() <= 15, unicode"Приватная фаза закончилась");
         require(_amount <= 100000, unicode"Больше 100000 нельзя купить");

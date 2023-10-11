@@ -154,13 +154,7 @@
 					}
 				],
 				"name": "buyPrivateToken",
-				"outputs": [
-					{
-						"internalType": "string",
-						"name": "",
-						"type": "string"
-					}
-				],
+				"outputs": [],
 				"stateMutability": "payable",
 				"type": "function"
 			},
@@ -720,11 +714,11 @@
 			]
 		},
 		"contracts/block2.sol": {
-			"keccak256": "0x9c48011189520c206af1d7cc938bcc92a2946d77e5c066f015d886e3fe982ddc",
+			"keccak256": "0x99f47f401d3fe8c48941464f3a2868fc7746d27f6fe5566f6efc8ad7ace1104f",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://9e73d4cd2c559ba6a1e38469a9fcec5d3b6af7efb9c0a0fab54ef562a866d3f1",
-				"dweb:/ipfs/QmccosnaErTQgExEEN2BZmV2krbCuQbfU7DLgiQDWdhrYV"
+				"bzz-raw://0feefd86287b2233d70ace9e595c25af213604da477af9be1753f9a2ce27ab3f",
+				"dweb:/ipfs/QmRZtNdzEPzXiJdhRihVXzDaVe3JMtKFU1UduXTVXF8zp7"
 			]
 		},
 		"hardhat/console.sol": {
