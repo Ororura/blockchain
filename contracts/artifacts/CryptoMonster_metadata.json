@@ -469,19 +469,6 @@
 			},
 			{
 				"inputs": [],
-				"name": "timeNow",
-				"outputs": [
-					{
-						"internalType": "uint256",
-						"name": "",
-						"type": "uint256"
-					}
-				],
-				"stateMutability": "view",
-				"type": "function"
-			},
-			{
-				"inputs": [],
 				"name": "timeStart",
 				"outputs": [
 					{
@@ -733,11 +720,11 @@
 			]
 		},
 		"contracts/block2.sol": {
-			"keccak256": "0x1d74f16ae9ddf62c46ae9e9386cdf8ea1b96ec951e0ba416c09e5289b77c2209",
+			"keccak256": "0x9c48011189520c206af1d7cc938bcc92a2946d77e5c066f015d886e3fe982ddc",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://fa1d920a27cb3e78ae6edc1677f911862803e290591e45f621d897d1ae904107",
-				"dweb:/ipfs/QmQwvDgBNfehmQRVHYwqZQkysQLcYVTv5dDvJMz5RTf6K3"
+				"bzz-raw://9e73d4cd2c559ba6a1e38469a9fcec5d3b6af7efb9c0a0fab54ef562a866d3f1",
+				"dweb:/ipfs/QmccosnaErTQgExEEN2BZmV2krbCuQbfU7DLgiQDWdhrYV"
 			]
 		},
 		"hardhat/console.sol": {

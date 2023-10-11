@@ -14,8 +14,7 @@ contract CryptoMonster is ERC20("CryptoMonster", "CMON") {
     uint public leftBalOwner;
     uint public publicPrice;
     uint public timeStart;
-    uint public timeNow;
-    uint public timeDif;
+    uint public timeDif = 0;
     uint public timeSystem;
     address public owner;
 
@@ -35,9 +34,7 @@ contract CryptoMonster is ERC20("CryptoMonster", "CMON") {
     constructor() {
         owner = msg.sender;
         timeStart = block.timestamp;
-        timeNow = timeStart;
         timeSystem = timeStart;
-        timeDif = 0;
         _mint(msg.sender, totalCoins);
 
         userRole[0xAb8483F64d9C6d1EcF9b849Ae677dD3315835cb2] = Role.Private;
@@ -117,18 +114,17 @@ contract CryptoMonster is ERC20("CryptoMonster", "CMON") {
         require(checkTime() <= 15, unicode"Приватная фаза закончилась");
         require(_amount <= 100000, unicode"Больше 100000 нельзя купить");
         require(privateCoins > 0, unicode"Private коины закончились");
+
+        bool isWhiteListed = false;
         for(uint i; i < whiteList.length; i++) {
             if(msg.sender == whiteList[i]) {
-                _transfer(owner, msg.sender, _amount * 10 ** decimals());
-                privateCoins -= _amount * 10 ** decimals();
-                payable(msg.sender).transfer(_amount * 750000000000000);
-            }
-            else {
-                return unicode"Free sale not started";
+                isWhiteListed = true;
             }
         }
-
-        return unicode"Операция проведена успешна";
+        require(isWhiteListed, unicode"Вас нет в WhiteList");
+        _transfer(owner, msg.sender, _amount * 10 ** decimals());
+        privateCoins -= _amount * 10 ** decimals();
+        payable(msg.sender).transfer(_amount * 750000000000000);
     }
 
     function buyPublicToken(uint _amount) public payable {
