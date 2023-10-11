@@ -1,77 +1,206 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.0;
 
+// Сделать функционал передачи оставшихся коинов; Сделать переводы оставшихся коинов на leftBalOwner.
+// Сделать покупку токенов одной функцией
+
+// ПОФИКСИТЬ СОЗДАНИЕ РЕКВЕСТОВ НА ДОБАВЛЕНИЕ В ВАЙТ ЛИСТ
+
+pragma solidity ^0.8.21;
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
+import "hardhat/console.sol";
 
 contract CryptoMonster is ERC20("CryptoMonster", "CMON") {
-    address public owner;
-    uint totalSupp = 10000000 * 10 ** 12;
+    uint private  totalCoins = 10000000 * 10 ** decimals();
+    uint private  seedCoins = totalCoins * 10 / 100;
+    uint private  privateCoins = totalCoins * 30 / 100;
+    uint private  pubCoins = totalCoins * 60 / 100;
+    uint private  publicPrice = 0.001 ether;
 
-    uint SEED_ALLOCATION = totalSupp * 10 / 100;
-    uint PRIVATE_ALLOCATION = totalSupp * 30 / 100;
-    uint PUBLIC_ALLOCATION = totalSupp * 60 / 100;
+    uint private  leftBalOwner;
+    uint private  timeStart;
+    uint private  timeDif = 0;
+    uint private  timeSystem;
+    address private owner;
 
-    uint256 public startTime;
-    uint256 public privateSaleEndTime;
-    uint256 public publicSaleEndTime;
+    enum Role {User, Private, Public, Owner}
+    enum Phase {Seed, Privat, Public}
 
-    mapping(address => bool) public whitelist;
+    struct Ticket {
+        string name;
+        address usrAddress;
+        bool status;
+    }
 
-    modifier onlyOwner() {
-        require(msg.sender == owner, unicode"Использовать может только владелец");
+    struct User {
+        bool whiteList;
+        string login;
+        Role role;
+        address wallet;
+        uint seedBal;
+        uint privateBal;
+        uint publicBal;
+    }
+
+
+    mapping(address => User) private users;
+    mapping(string => address) private logins;
+    mapping(address => bytes32) public passwords;
+    //Ticket[] private requests;
+    // address[] private whiteList;
+    mapping(address => bool) public requests;
+
+
+    //Shanghai
+    constructor() {
+        owner = msg.sender;
+        users[msg.sender] = User(true, "owner", Role.Owner, msg.sender, 0, 0, 0);
+        timeStart = block.timestamp;
+        timeSystem = timeStart;
+        _mint(msg.sender, totalCoins);
+
+        users[0xAb8483F64d9C6d1EcF9b849Ae677dD3315835cb2] = User(true, "private", Role.Private, 0xAb8483F64d9C6d1EcF9b849Ae677dD3315835cb2, 0, 0, 0);
+        users[0x4B20993Bc481177ec7E8f571ceCaE8A9e22C02db] = User(false, "public", Role.Public, 0xAb8483F64d9C6d1EcF9b849Ae677dD3315835cb2, 0, 0, 0);
+        users[0x78731D3Ca6b7E34aC0F824c42a7cC18A495cabaB] = User(false, "investor1", Role.User, 0x78731D3Ca6b7E34aC0F824c42a7cC18A495cabaB, 300000, 0, 0);
+        users[0x617F2E2fD72FD9D5503197092aC168c91465E7f2] = User(false, "investor2", Role.User, 0x617F2E2fD72FD9D5503197092aC168c91465E7f2, 400000, 0, 0);
+        users[0x17F6AD8Ef982297579C203069C1DbfFE4348c372] = User(false, "bestFriend", Role.User, 0x17F6AD8Ef982297579C203069C1DbfFE4348c372, 200000, 0, 0);
+
+        _transfer(msg.sender,0x78731D3Ca6b7E34aC0F824c42a7cC18A495cabaB , 300000 * 10 ** decimals());
+        seedCoins = seedCoins - 300000 * 10 ** decimals();
+        _transfer(msg.sender, 0x617F2E2fD72FD9D5503197092aC168c91465E7f2, 400000 * 10 ** decimals());
+        seedCoins = seedCoins - 400000 * 10 ** decimals();
+        _transfer(msg.sender, 0x17F6AD8Ef982297579C203069C1DbfFE4348c372, 200000 * 10 ** decimals());
+        seedCoins = seedCoins - 200000 * 10 ** decimals();
+    }
+
+    modifier AccesControl(Role _role) {
+        require(users[msg.sender].role == _role, unicode"Ваша роль не позволяет это использовать");
         _;
     }
 
-    constructor() {
-        owner = msg.sender;
-        _mint(owner, totalSupp);
-        _transfer(owner, address(0xAb8483F64d9C6d1EcF9b849Ae677dD3315835cb2), SEED_ALLOCATION * 3 / 10); // investor1
-        _transfer(owner, address(0x4B20993Bc481177ec7E8f571ceCaE8A9e22C02db), SEED_ALLOCATION * 4 / 10); // investor2
-        _transfer(owner, address(0x78731D3Ca6b7E34aC0F824c42a7cC18A495cabaB), SEED_ALLOCATION * 2 / 10); // bestFriend
-
-        startTime = block.timestamp;
-        privateSaleEndTime = startTime + 5 minutes;
-        publicSaleEndTime = privateSaleEndTime + 10 minutes;
+    function registration(string memory _login, string memory _password) external {
+        users[msg.sender] = User(false, _login, Role.User, msg.sender, 0, 0, 0);
+        logins[_login] = msg.sender;
+        passwords[msg.sender] = keccak256(abi.encode(_password));
     }
 
-    function startPublicSale() external view onlyOwner {
-        require(block.timestamp >= publicSaleEndTime, unicode"Публичные продажи ещё начались");
-        
+    function login(string memory _login, string memory _password) external view returns(User memory) {
+        require(logins[_login] == address(0), unicode"Пользователь с таким логином уже существует");
+        require(users[msg.sender].wallet == address(0), unicode"Пользователь с таким адресом уже существует");
+        string memory storedLogin = users[msg.sender].login;
+        require(keccak256(abi.encode(_login)) == keccak256(abi.encode(storedLogin)));
+        require(keccak256(abi.encode(_password)) == passwords[msg.sender]);
+        return users[msg.sender];
     }
 
-    function addToWhitelist(address[] memory users) external onlyOwner {
-        for (uint i = 0; i < users.length; i++) {
-            whitelist[users[i]] = true;
+    function decimals() public pure override returns (uint8) {
+        return 12;
+    }
+
+    function checkTime() public returns(uint){
+        timeSystem = block.timestamp + timeDif;
+        uint timeCycle = (timeSystem - timeStart);
+        console.log(timeCycle);
+        return timeCycle;
+    }
+
+    function updateLeftBalOwner () external  {
+        if(checkTime() > 5 * 60) {
+            leftBalOwner += seedCoins;
+        }
+        if(checkTime() > 15 * 60) {
+            leftBalOwner += privateCoins;
         }
     }
 
-    function removeFromWhitelist(address[] memory users) external onlyOwner {
-        for (uint256 i = 0; i < users.length; i++) {
-            whitelist[users[i]] = false;
+    function skipTime(uint _minutes) public {
+        timeDif += _minutes * 60;
+    }
+
+    function giveCoinsFromOwner(uint _amount, address _user) external AccesControl(Role.Owner) {
+        require(leftBalOwner > 0, unicode"У вас нет остаточных коинов");
+        _transfer(msg.sender, _user, _amount * 10 **decimals());
+    }
+
+    function payReward(uint _amount, address _user) external AccesControl(Role.Public) {
+        _transfer(msg.sender, _user, _amount);
+        pubCoins -= _amount * 10 ** decimals();
+    }
+
+    function changePublicPrice(uint _newPrice) external AccesControl(Role.Public) {
+        publicPrice = _newPrice;
+    }
+
+    function makePrivateReq(string memory _name) external {
+        require(checkTime() >15, unicode"Приватная фаза закончилась");
+        require(!users[msg.sender].whiteList, unicode"Вы уже в white листе");
+        require(requests[msg.sender]);
+        requests[msg.sender] = ;
+    }
+
+    function approveWhiteList(address _user, bool _status) external AccesControl(Role.Private) {
+        // if(status) {
+        //     whiteList.push(requests[_idTicket].usrAddress);
+        // } 
+        // else {
+        //     delete requests[_idTicket];
+        // }
+        requests[_user] = _status;
+
+    }
+
+    // function buyPrivateToken(uint _amount) external payable {
+    //     require(checkTime() >= 5, unicode"Приватная фаза ещё не началась");
+    //     require(checkTime() <= 15, unicode"Приватная фаза закончилась");
+    //     require(_amount <= 100000, unicode"Больше 100000 нельзя купить");
+    //     require(privateCoins > 0, unicode"Private коины закончились");
+
+    //     bool isWhiteListed = false;
+    //     for(uint i; i < whiteList.length; i++) {
+    //         if(msg.sender == whiteList[i]) {
+    //             isWhiteListed = true;
+    //         }
+    //     }
+    //     require(isWhiteListed, unicode"Free sale not started");
+    //     _transfer(owner, msg.sender, _amount * 10 ** decimals());
+    //     privateCoins -= _amount * 10 ** decimals();
+    //     payable(msg.sender).transfer(_amount * 750000000000000);
+    // }
+
+    // function buyPublicToken(uint _amount) external payable {
+    //     require(checkTime() >= 10, unicode"Public фаза ещё не началась");
+    //     require(_amount <= 5000, unicode"Больше 5000 нельзя купить");
+    //     require(pubCoins > 0, unicode"Public коины закончились");
+    //     _transfer(owner, msg.sender, _amount * 10 ** decimals());
+    //     pubCoins -= _amount * 10 ** decimals();
+    //     payable(msg.sender).transfer(_amount * 1000000000000000);
+    // }
+
+    function getTokenPrice() public returns(uint){
+        uint price = 0;
+        if(checkTime() >= 5 * 60 && checkTime() <= 15 * 60) {
+            price = 0.0075 ether;
         }
+        if(checkTime() >= 15 * 60) {
+            price = publicPrice;
+        }
+        console.log(price);
+        return price;
     }
 
-    function buyPrivateTokens(uint256 amount) external payable {
-        require(whitelist[msg.sender], unicode"Вас нет в вайт листе");
-        require(block.timestamp >= startTime && block.timestamp < privateSaleEndTime, unicode"Приватная продажа ещё не началась");
-        require(amount <= 100000, unicode"Лимит покупок превышен");
-        uint256 tokenPrice = 750000 wei; 
-        uint256 cost = amount * tokenPrice;
-        require(msg.value >= cost, "Insufficient funds");
-        _transfer(owner, msg.sender, amount);
+    function buyToken(uint _amount) public {
+        require(checkTime() > 5 * 60, unicode"Идёт подготовительная фаза");
+        require(_amount > 0, unicode"Кол-во не может быть 0");
+        _transfer(owner, msg.sender, _amount);
+
+        if(getTokenPrice() == 0.0075 ether) {
+            users[msg.sender].privateBal += _amount;
+        }
+        else {
+            users[msg.sender].publicBal += _amount;
+        }
+
+        payable(msg.sender).transfer(_amount * getTokenPrice());
     }
 
-    function buyPublicTokens(uint256 amount) external payable {
-        require(block.timestamp >= privateSaleEndTime && block.timestamp < publicSaleEndTime, unicode"Публичная продажа ещё на началась");
-        require(amount <= 5000, "Max purchase limit exceeded");
-        uint256 tokenPrice = 1000 wei;
-        uint256 cost = amount * tokenPrice;
-        require(msg.value >= cost, unicode"Недостаточно средств");
-        _transfer(owner, msg.sender, amount);
-    }
 
-    function transferPublicTokens(address recipient, uint256 amount) external onlyOwner {
-        _transfer(owner, recipient, amount);
-    }
 }
-

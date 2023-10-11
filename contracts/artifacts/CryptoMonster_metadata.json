@@ -111,13 +111,13 @@
 			{
 				"inputs": [
 					{
-						"internalType": "uint256",
-						"name": "_idTicket",
-						"type": "uint256"
+						"internalType": "address",
+						"name": "_user",
+						"type": "address"
 					},
 					{
 						"internalType": "bool",
-						"name": "status",
+						"name": "_status",
 						"type": "bool"
 					}
 				],
@@ -153,22 +153,9 @@
 						"type": "uint256"
 					}
 				],
-				"name": "buyPrivateToken",
+				"name": "buyToken",
 				"outputs": [],
-				"stateMutability": "payable",
-				"type": "function"
-			},
-			{
-				"inputs": [
-					{
-						"internalType": "uint256",
-						"name": "_amount",
-						"type": "uint256"
-					}
-				],
-				"name": "buyPublicToken",
-				"outputs": [],
-				"stateMutability": "payable",
+				"stateMutability": "nonpayable",
 				"type": "function"
 			},
 			{
@@ -235,6 +222,19 @@
 				"type": "function"
 			},
 			{
+				"inputs": [],
+				"name": "getTokenPrice",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
 				"inputs": [
 					{
 						"internalType": "uint256",
@@ -294,9 +294,9 @@
 					{
 						"components": [
 							{
-								"internalType": "string",
-								"name": "name",
-								"type": "string"
+								"internalType": "bool",
+								"name": "whiteList",
+								"type": "bool"
 							},
 							{
 								"internalType": "string",
@@ -310,8 +310,23 @@
 							},
 							{
 								"internalType": "address",
-								"name": "adr",
+								"name": "wallet",
 								"type": "address"
+							},
+							{
+								"internalType": "uint256",
+								"name": "seedBal",
+								"type": "uint256"
+							},
+							{
+								"internalType": "uint256",
+								"name": "privateBal",
+								"type": "uint256"
+							},
+							{
+								"internalType": "uint256",
+								"name": "publicBal",
+								"type": "uint256"
 							}
 						],
 						"internalType": "struct CryptoMonster.User",
@@ -389,23 +404,37 @@
 				"inputs": [
 					{
 						"internalType": "string",
-						"name": "_name",
+						"name": "_login",
 						"type": "string"
 					},
 					{
 						"internalType": "string",
 						"name": "_password",
 						"type": "string"
-					},
-					{
-						"internalType": "string",
-						"name": "_login",
-						"type": "string"
 					}
 				],
 				"name": "registration",
 				"outputs": [],
 				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "",
+						"type": "address"
+					}
+				],
+				"name": "requests",
+				"outputs": [
+					{
+						"internalType": "bool",
+						"name": "",
+						"type": "bool"
+					}
+				],
+				"stateMutability": "view",
 				"type": "function"
 			},
 			{
@@ -563,7 +592,7 @@
 	},
 	"settings": {
 		"compilationTarget": {
-			"contracts/block2.sol": "CryptoMonster"
+			"contracts/block.sol": "CryptoMonster"
 		},
 		"evmVersion": "shanghai",
 		"libraries": {},
@@ -609,12 +638,12 @@
 				"dweb:/ipfs/QmRK2Y5Yc6BK7tGKkgsgn3aJEQGi5aakeSPZvS65PV8Xp3"
 			]
 		},
-		"contracts/block2.sol": {
-			"keccak256": "0x780877049339c9e0a928de3b646ab86a7768b1f2fbfb245235996f37a378d306",
+		"contracts/block.sol": {
+			"keccak256": "0xc8ea3512f869a781de2bae4c3536955bb1bba0cdd510e3d4de3f802f1254e113",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://132fe86c93affc9920e2d824e7fdc57ea0f9aa29b2f7a2ebac1fa817d2d14876",
-				"dweb:/ipfs/QmUZ2rdtqWTTWrNUnGw9z1asUgXqgsuA8ZCTWyFBBbi1VB"
+				"bzz-raw://e6770aff7099a5f44491c9bad10b27a7960f6918600e87d5db03427de1aef349",
+				"dweb:/ipfs/QmdhwUyA6pZL9QoupVY375dHQw1ZEZLPyzFoLL7y9crJuv"
 			]
 		},
 		"hardhat/console.sol": {
