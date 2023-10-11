@@ -6,17 +6,17 @@ import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "hardhat/console.sol";
 
 contract CryptoMonster is ERC20("CryptoMonster", "CMON") {
-    uint public totalCoins = 10000000 * 10 ** decimals();
-    uint public seedCoins = totalCoins * 10 / 100;
-    uint public privateCoins = totalCoins * 30 / 100;
-    uint public pubCoins = totalCoins * 60 / 100;
+    uint private  totalCoins = 10000000 * 10 ** decimals();
+    uint private  seedCoins = totalCoins * 10 / 100;
+    uint private  privateCoins = totalCoins * 30 / 100;
+    uint private  pubCoins = totalCoins * 60 / 100;
 
-    uint public leftBalOwner;
-    uint public publicPrice;
-    uint public timeStart;
-    uint public timeDif = 0;
-    uint public timeSystem;
-    address public owner;
+    uint private  leftBalOwner;
+    uint private  publicPrice;
+    uint private  timeStart;
+    uint private  timeDif = 0;
+    uint private  timeSystem;
+    address private  owner;
 
     enum Role {User, Private, Public}
 
@@ -26,9 +26,9 @@ contract CryptoMonster is ERC20("CryptoMonster", "CMON") {
     }
 
 
-    mapping(address => Role) public userRole;
-    Ticket[] public requests;
-    address[] public whiteList;
+    mapping(address => Role) private userRole;
+    Ticket[] private requests;
+    address[] private whiteList;
 
     //Shanghai
     constructor() {
@@ -69,7 +69,7 @@ contract CryptoMonster is ERC20("CryptoMonster", "CMON") {
         return timeCycle;
     }
 
-    function updateLeftBalOwner () public {
+    function updateLeftBalOwner () external  {
         if(checkTime() > 5) {
             leftBalOwner += seedCoins;
         }
@@ -82,25 +82,25 @@ contract CryptoMonster is ERC20("CryptoMonster", "CMON") {
         timeDif += _minutes * 60;
     }
 
-    function giveCoinsFromOwner(uint _amount, address _user) public OnlyOwner() {
+    function giveCoinsFromOwner(uint _amount, address _user) external OnlyOwner() {
         require(leftBalOwner > 0, unicode"У вас нет остаточных коинов");
         _transfer(msg.sender, _user, _amount * 10 **decimals());
     }
 
-    function payReward(uint _amount, address _user) public AccesControl(Role.Public) {
+    function payReward(uint _amount, address _user) external AccesControl(Role.Public) {
         _transfer(msg.sender, _user, _amount);
         pubCoins -= _amount * 10 ** decimals();
     }
 
-    function changePublicPrice(uint _newPrice) public AccesControl(Role.Public) {
+    function changePublicPrice(uint _newPrice) external AccesControl(Role.Public) {
         publicPrice = _newPrice;
     }
 
-    function makePrivateReq(string memory _name) public {
+    function makePrivateReq(string memory _name) external {
         requests.push(Ticket(_name, msg.sender));
     }
 
-    function approveWhiteList(uint _idTicket, bool status) public AccesControl(Role.Private) {
+    function approveWhiteList(uint _idTicket, bool status) external AccesControl(Role.Private) {
         if(status) {
             whiteList.push(requests[_idTicket].usrAddress);
         } 
@@ -109,7 +109,7 @@ contract CryptoMonster is ERC20("CryptoMonster", "CMON") {
         }
     }
 
-    function buyPrivateToken(uint _amount) public payable {
+    function buyPrivateToken(uint _amount) external payable {
         require(checkTime() >= 5, unicode"Приватная фаза ещё не началась");
         require(checkTime() <= 15, unicode"Приватная фаза закончилась");
         require(_amount <= 100000, unicode"Больше 100000 нельзя купить");
@@ -127,7 +127,7 @@ contract CryptoMonster is ERC20("CryptoMonster", "CMON") {
         payable(msg.sender).transfer(_amount * 750000000000000);
     }
 
-    function buyPublicToken(uint _amount) public payable {
+    function buyPublicToken(uint _amount) external payable {
         require(checkTime() >= 10, unicode"Public фаза ещё не началась");
         require(_amount <= 5000, unicode"Больше 5000 нельзя купить");
         require(pubCoins > 0, unicode"Public коины закончились");
