@@ -24,11 +24,12 @@ contract CryptoMonster is ERC20("CryptoMonster", "CMON") {
 
     enum Role {User, Private, Public, Owner}
     enum Phase {Seed, Privat, Public}
+    enum ReqStatus{Denied, Accepted, UnderReview}
 
     struct Ticket {
         string name;
-        address usrAddress;
-        bool status;
+        address wallet;
+        ReqStatus status;
     }
 
     struct User {
@@ -47,7 +48,7 @@ contract CryptoMonster is ERC20("CryptoMonster", "CMON") {
     mapping(address => bytes32) public passwords;
     //Ticket[] private requests;
     // address[] private whiteList;
-    mapping(address => bool) public requests;
+    mapping(address => Ticket) public requests;
 
 
     //Shanghai
@@ -59,10 +60,10 @@ contract CryptoMonster is ERC20("CryptoMonster", "CMON") {
         _mint(msg.sender, totalCoins);
 
         users[0xAb8483F64d9C6d1EcF9b849Ae677dD3315835cb2] = User(true, "private", Role.Private, 0xAb8483F64d9C6d1EcF9b849Ae677dD3315835cb2, 0, 0, 0);
-        users[0x4B20993Bc481177ec7E8f571ceCaE8A9e22C02db] = User(false, "public", Role.Public, 0xAb8483F64d9C6d1EcF9b849Ae677dD3315835cb2, 0, 0, 0);
-        users[0x78731D3Ca6b7E34aC0F824c42a7cC18A495cabaB] = User(false, "investor1", Role.User, 0x78731D3Ca6b7E34aC0F824c42a7cC18A495cabaB, 300000, 0, 0);
-        users[0x617F2E2fD72FD9D5503197092aC168c91465E7f2] = User(false, "investor2", Role.User, 0x617F2E2fD72FD9D5503197092aC168c91465E7f2, 400000, 0, 0);
-        users[0x17F6AD8Ef982297579C203069C1DbfFE4348c372] = User(false, "bestFriend", Role.User, 0x17F6AD8Ef982297579C203069C1DbfFE4348c372, 200000, 0, 0);
+        users[0x4B20993Bc481177ec7E8f571ceCaE8A9e22C02db] = User(false, "public", Role.Public, 0x4B20993Bc481177ec7E8f571ceCaE8A9e22C02db, 0, 0, 0);
+        users[0x78731D3Ca6b7E34aC0F824c42a7cC18A495cabaB] = User(false, "investor1", Role.User, 0x78731D3Ca6b7E34aC0F824c42a7cC18A495cabaB, 300000 * 10 ** decimals(), 0, 0);
+        users[0x617F2E2fD72FD9D5503197092aC168c91465E7f2] = User(false, "investor2", Role.User, 0x617F2E2fD72FD9D5503197092aC168c91465E7f2, 400000 * 10 ** decimals(), 0, 0);
+        users[0x17F6AD8Ef982297579C203069C1DbfFE4348c372] = User(false, "bestFriend", Role.User, 0x17F6AD8Ef982297579C203069C1DbfFE4348c372, 200000 * 10 ** decimals(), 0, 0);
 
         _transfer(msg.sender,0x78731D3Ca6b7E34aC0F824c42a7cC18A495cabaB , 300000 * 10 ** decimals());
         seedCoins = seedCoins - 300000 * 10 ** decimals();
@@ -133,18 +134,18 @@ contract CryptoMonster is ERC20("CryptoMonster", "CMON") {
     function makePrivateReq(string memory _name) external {
         require(checkTime() >15, unicode"Приватная фаза закончилась");
         require(!users[msg.sender].whiteList, unicode"Вы уже в white листе");
-        require(requests[msg.sender]);
-        requests[msg.sender] = ;
+        require(requests[msg.sender].wallet == address(0));
+        requests[msg.sender] = Ticket(_name, msg.sender, ReqStatus.UnderReview);
     }
 
-    function approveWhiteList(address _user, bool _status) external AccesControl(Role.Private) {
-        // if(status) {
-        //     whiteList.push(requests[_idTicket].usrAddress);
-        // } 
-        // else {
-        //     delete requests[_idTicket];
-        // }
-        requests[_user] = _status;
+    function approveWhiteList(address _user, ReqStatus _status) external AccesControl(Role.Private) {
+        require(_status != ReqStatus.UnderReview, unicode"Укажите Accepted или Denied");
+        if(_status == ReqStatus.Accepted) {
+            users[_user].whiteList = true;
+        }
+        else {
+            requests[_user].status = ReqStatus.Denied;
+        }
 
     }
 
@@ -187,16 +188,47 @@ contract CryptoMonster is ERC20("CryptoMonster", "CMON") {
         return price;
     }
 
+    function sendToken(address _to, uint _amount, Phase _phase) external {
+        // А нахуя мы отправляем в структуры токены из разных фаз?? 
+        _amount = _amount * 10 ** decimals();
+        require(users[msg.sender].privateBal >= _amount, unicode"У вас недостаточно токенов");
+        require(users[msg.sender].publicBal >= _amount, unicode"У вас недостаточно токенов");
+        require(users[msg.sender].seedBal >= _amount, unicode"У вас недостаточно токенов");
+
+        if(_phase == Phase.Privat) {
+            _transfer(msg.sender, _to, _amount);
+            users[msg.sender].privateBal -= _amount;
+            users[_to].privateBal += _amount;
+        }
+        if(_phase == Phase.Seed) {
+            _transfer(msg.sender, _to, _amount);
+            users[msg.sender].seedBal -= _amount;
+            users[_to].seedBal += _amount;
+        }
+        if(_phase == Phase.Public) {
+            _transfer(msg.sender, _to, _amount);
+            users[msg.sender].publicBal -= _amount;
+            users[_to].publicBal += _amount;
+        }
+    }
+
     function buyToken(uint _amount) public {
+        _amount = _amount * 10 ** decimals();
         require(checkTime() > 5 * 60, unicode"Идёт подготовительная фаза");
         require(_amount > 0, unicode"Кол-во не может быть 0");
+        require(users[0xAb8483F64d9C6d1EcF9b849Ae677dD3315835cb2].privateBal > 0, unicode"Токены закончились");
+        require(users[0x4B20993Bc481177ec7E8f571ceCaE8A9e22C02db].publicBal > 0, unicode"Токены закончились");
         _transfer(owner, msg.sender, _amount);
 
         if(getTokenPrice() == 0.0075 ether) {
             users[msg.sender].privateBal += _amount;
+            users[0xAb8483F64d9C6d1EcF9b849Ae677dD3315835cb2].privateBal -= _amount;
+            _transfer(0xAb8483F64d9C6d1EcF9b849Ae677dD3315835cb2, msg.sender, _amount);
         }
         else {
             users[msg.sender].publicBal += _amount;
+            users[0x4B20993Bc481177ec7E8f571ceCaE8A9e22C02db].publicBal -= _amount;
+            _transfer(0x4B20993Bc481177ec7E8f571ceCaE8A9e22C02db, msg.sender, _amount);
         }
 
         payable(msg.sender).transfer(_amount * getTokenPrice());

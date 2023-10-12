@@ -116,9 +116,9 @@
 						"type": "address"
 					},
 					{
-						"internalType": "bool",
+						"internalType": "enum CryptoMonster.ReqStatus",
 						"name": "_status",
-						"type": "bool"
+						"type": "uint8"
 					}
 				],
 				"name": "approveWhiteList",
@@ -429,12 +429,45 @@
 				"name": "requests",
 				"outputs": [
 					{
-						"internalType": "bool",
-						"name": "",
-						"type": "bool"
+						"internalType": "string",
+						"name": "name",
+						"type": "string"
+					},
+					{
+						"internalType": "address",
+						"name": "wallet",
+						"type": "address"
+					},
+					{
+						"internalType": "enum CryptoMonster.ReqStatus",
+						"name": "status",
+						"type": "uint8"
 					}
 				],
 				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "_to",
+						"type": "address"
+					},
+					{
+						"internalType": "uint256",
+						"name": "_amount",
+						"type": "uint256"
+					},
+					{
+						"internalType": "enum CryptoMonster.Phase",
+						"name": "_phase",
+						"type": "uint8"
+					}
+				],
+				"name": "sendToken",
+				"outputs": [],
+				"stateMutability": "nonpayable",
 				"type": "function"
 			},
 			{
@@ -639,11 +672,11 @@
 			]
 		},
 		"contracts/block.sol": {
-			"keccak256": "0xc8ea3512f869a781de2bae4c3536955bb1bba0cdd510e3d4de3f802f1254e113",
+			"keccak256": "0x93115bc3cdb5aa15a6050c2960b9e7445130a5564668ebe6159b07d9117cec9d",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://e6770aff7099a5f44491c9bad10b27a7960f6918600e87d5db03427de1aef349",
-				"dweb:/ipfs/QmdhwUyA6pZL9QoupVY375dHQw1ZEZLPyzFoLL7y9crJuv"
+				"bzz-raw://5323dde263b676bccd89b1031f7b13dce6ae4d35c7716754762449cbe182d082",
+				"dweb:/ipfs/QmeK6JZ7sNX84aiAXuAZ3u3ZgBJcznUhiMLAxo2vs81TEC"
 			]
 		},
 		"hardhat/console.sol": {
