@@ -11,14 +11,13 @@ import "hardhat/console.sol";
 
 contract CryptoMonster is ERC20("CryptoMonster", "CMON") {
     uint private  totalCoins = 10000000 * 10 ** decimals();
-    uint private  seedCoins = totalCoins * 10 / 100;
-    uint private  privateCoins = totalCoins * 30 / 100;
-    uint private  pubCoins = totalCoins * 60 / 100;
+    uint private  seedTokens = totalCoins * 10 / 100;
+    uint private  privateTokens = totalCoins * 30 / 100;
+    uint private  publicTokens = totalCoins * 60 / 100;
     uint private  publicPrice = 0.001 ether;
-
     uint private  leftBalOwner;
     uint private  timeStart;
-    uint private  timeDif = 0;
+    uint private  timeDif;
     uint private  timeSystem;
     address private owner;
 
@@ -46,8 +45,6 @@ contract CryptoMonster is ERC20("CryptoMonster", "CMON") {
     mapping(address => User) private users;
     mapping(string => address) private logins;
     mapping(address => bytes32) public passwords;
-    //Ticket[] private requests;
-    // address[] private whiteList;
     mapping(address => Ticket) public requests;
 
 
@@ -66,11 +63,11 @@ contract CryptoMonster is ERC20("CryptoMonster", "CMON") {
         users[0x17F6AD8Ef982297579C203069C1DbfFE4348c372] = User(false, "bestFriend", Role.User, 0x17F6AD8Ef982297579C203069C1DbfFE4348c372, 200000 * 10 ** decimals(), 0, 0);
 
         _transfer(msg.sender,0x78731D3Ca6b7E34aC0F824c42a7cC18A495cabaB , 300000 * 10 ** decimals());
-        seedCoins = seedCoins - 300000 * 10 ** decimals();
+        seedTokens = seedTokens - 300000 * 10 ** decimals();
         _transfer(msg.sender, 0x617F2E2fD72FD9D5503197092aC168c91465E7f2, 400000 * 10 ** decimals());
-        seedCoins = seedCoins - 400000 * 10 ** decimals();
+        seedTokens = seedTokens - 400000 * 10 ** decimals();
         _transfer(msg.sender, 0x17F6AD8Ef982297579C203069C1DbfFE4348c372, 200000 * 10 ** decimals());
-        seedCoins = seedCoins - 200000 * 10 ** decimals();
+        seedTokens = seedTokens - 200000 * 10 ** decimals();
     }
 
     modifier AccesControl(Role _role) {
@@ -78,6 +75,47 @@ contract CryptoMonster is ERC20("CryptoMonster", "CMON") {
         _;
     }
 
+    function decimals() public pure override returns (uint8) {
+        return 12;
+    }
+
+    function checkTime() public returns(uint){
+        timeSystem = block.timestamp + timeDif;
+        uint timeCycle = (timeSystem - timeStart);
+        console.log(timeCycle);
+        return timeCycle;
+    }
+
+    function skipTime(uint _minutes) public {
+        timeDif += _minutes * 60;
+    }
+
+    function changePublicPrice(uint _newPrice) external AccesControl(Role.Public) {
+        publicPrice = _newPrice;
+    }
+
+    function getTokenPrice() public returns(uint){
+        uint price = 0;
+        if(checkTime() >= 5 * 60 && checkTime() <= 15 * 60) {
+            price = 0.0075 ether;
+        }
+        if(checkTime() >= 15 * 60) {
+            price = publicPrice;
+        }
+        console.log(price);
+        return price;
+    }
+
+    function updateLeftBalOwner () external AccesControl(Role.Owner) {
+        if(checkTime() > 5 * 60) {
+            leftBalOwner += seedTokens;
+        }
+        if(checkTime() > 15 * 60) {
+            leftBalOwner += privateTokens;
+        }
+    }
+
+    // Сделать проверку на юзера в системе через AccessControl !!!!!!!!!!!!!!!!!!!!!!!!
     function registration(string memory _login, string memory _password) external {
         users[msg.sender] = User(false, _login, Role.User, msg.sender, 0, 0, 0);
         logins[_login] = msg.sender;
@@ -93,44 +131,6 @@ contract CryptoMonster is ERC20("CryptoMonster", "CMON") {
         return users[msg.sender];
     }
 
-    function decimals() public pure override returns (uint8) {
-        return 12;
-    }
-
-    function checkTime() public returns(uint){
-        timeSystem = block.timestamp + timeDif;
-        uint timeCycle = (timeSystem - timeStart);
-        console.log(timeCycle);
-        return timeCycle;
-    }
-
-    function updateLeftBalOwner () external  {
-        if(checkTime() > 5 * 60) {
-            leftBalOwner += seedCoins;
-        }
-        if(checkTime() > 15 * 60) {
-            leftBalOwner += privateCoins;
-        }
-    }
-
-    function skipTime(uint _minutes) public {
-        timeDif += _minutes * 60;
-    }
-
-    function giveCoinsFromOwner(uint _amount, address _user) external AccesControl(Role.Owner) {
-        require(leftBalOwner > 0, unicode"У вас нет остаточных коинов");
-        _transfer(msg.sender, _user, _amount * 10 **decimals());
-    }
-
-    function payReward(uint _amount, address _user) external AccesControl(Role.Public) {
-        _transfer(msg.sender, _user, _amount);
-        pubCoins -= _amount * 10 ** decimals();
-    }
-
-    function changePublicPrice(uint _newPrice) external AccesControl(Role.Public) {
-        publicPrice = _newPrice;
-    }
-
     function makePrivateReq(string memory _name) external {
         require(checkTime() >15, unicode"Приватная фаза закончилась");
         require(!users[msg.sender].whiteList, unicode"Вы уже в white листе");
@@ -140,72 +140,50 @@ contract CryptoMonster is ERC20("CryptoMonster", "CMON") {
 
     function approveWhiteList(address _user, ReqStatus _status) external AccesControl(Role.Private) {
         require(_status != ReqStatus.UnderReview, unicode"Укажите Accepted или Denied");
+        
         if(_status == ReqStatus.Accepted) {
             users[_user].whiteList = true;
         }
         else {
             requests[_user].status = ReqStatus.Denied;
         }
-
     }
 
-    // function buyPrivateToken(uint _amount) external payable {
-    //     require(checkTime() >= 5, unicode"Приватная фаза ещё не началась");
-    //     require(checkTime() <= 15, unicode"Приватная фаза закончилась");
-    //     require(_amount <= 100000, unicode"Больше 100000 нельзя купить");
-    //     require(privateCoins > 0, unicode"Private коины закончились");
+    function giveCoinsFromOwner(uint _amount, address _user) external AccesControl(Role.Owner) {
+        require(leftBalOwner > 0, unicode"У вас нет остаточных коинов");
+        _transfer(msg.sender, _user, _amount * 10 **decimals());
+    }
 
-    //     bool isWhiteListed = false;
-    //     for(uint i; i < whiteList.length; i++) {
-    //         if(msg.sender == whiteList[i]) {
-    //             isWhiteListed = true;
-    //         }
-    //     }
-    //     require(isWhiteListed, unicode"Free sale not started");
-    //     _transfer(owner, msg.sender, _amount * 10 ** decimals());
-    //     privateCoins -= _amount * 10 ** decimals();
-    //     payable(msg.sender).transfer(_amount * 750000000000000);
-    // }
+    function sendTokensToProvier(uint _amount, address _provider) external AccesControl(Role.Owner){
+        require(_amount > 0, unicode"Кол-во не может быть 0 или меньше 0"); 
+        _transfer(msg.sender, _provider, _amount);
+    }
 
-    // function buyPublicToken(uint _amount) external payable {
-    //     require(checkTime() >= 10, unicode"Public фаза ещё не началась");
-    //     require(_amount <= 5000, unicode"Больше 5000 нельзя купить");
-    //     require(pubCoins > 0, unicode"Public коины закончились");
-    //     _transfer(owner, msg.sender, _amount * 10 ** decimals());
-    //     pubCoins -= _amount * 10 ** decimals();
-    //     payable(msg.sender).transfer(_amount * 1000000000000000);
-    // }
-
-    function getTokenPrice() public returns(uint){
-        uint price = 0;
-        if(checkTime() >= 5 * 60 && checkTime() <= 15 * 60) {
-            price = 0.0075 ether;
-        }
-        if(checkTime() >= 15 * 60) {
-            price = publicPrice;
-        }
-        console.log(price);
-        return price;
+    function payReward(uint _amount, address _user) external AccesControl(Role.Public) {
+        require(_amount > 0, unicode"Кол-во не может быть 0 или меньше 0"); 
+        _transfer(msg.sender, _user, _amount);
+        publicTokens -= _amount * 10 ** decimals();
     }
 
     function sendToken(address _to, uint _amount, Phase _phase) external {
-        // А нахуя мы отправляем в структуры токены из разных фаз?? 
+        // А нахуя мы отправляем в структуры токены из разных фаз??
+        require(_amount > 0, unicode"Кол-во не может быть 0 или меньше 0"); 
         _amount = _amount * 10 ** decimals();
-        require(users[msg.sender].privateBal >= _amount, unicode"У вас недостаточно токенов");
-        require(users[msg.sender].publicBal >= _amount, unicode"У вас недостаточно токенов");
-        require(users[msg.sender].seedBal >= _amount, unicode"У вас недостаточно токенов");
 
         if(_phase == Phase.Privat) {
+            require(users[msg.sender].privateBal >= _amount, unicode"У вас недостаточно токенов");
             _transfer(msg.sender, _to, _amount);
             users[msg.sender].privateBal -= _amount;
             users[_to].privateBal += _amount;
         }
         if(_phase == Phase.Seed) {
+            require(users[msg.sender].seedBal >= _amount, unicode"У вас недостаточно токенов");
             _transfer(msg.sender, _to, _amount);
             users[msg.sender].seedBal -= _amount;
             users[_to].seedBal += _amount;
         }
         if(_phase == Phase.Public) {
+            require(users[msg.sender].publicBal >= _amount, unicode"У вас недостаточно токенов");
             _transfer(msg.sender, _to, _amount);
             users[msg.sender].publicBal -= _amount;
             users[_to].publicBal += _amount;
@@ -215,7 +193,7 @@ contract CryptoMonster is ERC20("CryptoMonster", "CMON") {
     function buyToken(uint _amount) public {
         _amount = _amount * 10 ** decimals();
         require(checkTime() > 5 * 60, unicode"Идёт подготовительная фаза");
-        require(_amount > 0, unicode"Кол-во не может быть 0");
+        require(_amount > 0, unicode"Кол-во не может быть 0 или меньше 0"); 
         require(users[0xAb8483F64d9C6d1EcF9b849Ae677dD3315835cb2].privateBal > 0, unicode"Токены закончились");
         require(users[0x4B20993Bc481177ec7E8f571ceCaE8A9e22C02db].publicBal > 0, unicode"Токены закончились");
         _transfer(owner, msg.sender, _amount);
@@ -224,11 +202,13 @@ contract CryptoMonster is ERC20("CryptoMonster", "CMON") {
             users[msg.sender].privateBal += _amount;
             users[0xAb8483F64d9C6d1EcF9b849Ae677dD3315835cb2].privateBal -= _amount;
             _transfer(0xAb8483F64d9C6d1EcF9b849Ae677dD3315835cb2, msg.sender, _amount);
+            privateTokens -= _amount;
         }
         else {
             users[msg.sender].publicBal += _amount;
             users[0x4B20993Bc481177ec7E8f571ceCaE8A9e22C02db].publicBal -= _amount;
             _transfer(0x4B20993Bc481177ec7E8f571ceCaE8A9e22C02db, msg.sender, _amount);
+            publicTokens -= _amount;
         }
 
         payable(msg.sender).transfer(_amount * getTokenPrice());
