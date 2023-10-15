@@ -155,7 +155,7 @@
 				],
 				"name": "buyToken",
 				"outputs": [],
-				"stateMutability": "nonpayable",
+				"stateMutability": "payable",
 				"type": "function"
 			},
 			{
@@ -690,11 +690,11 @@
 			]
 		},
 		"contracts/block.sol": {
-			"keccak256": "0x7938b5ae3cba37ff1df725332139a1ab1a13b54cd3762e9376482e7826494be0",
+			"keccak256": "0x5b431d2f7709340a7664ce3ad81daeb6b028b12c7edece2cc879a4c8c800a179",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://98edcf655d8e719585a75d34d4bda60d4af56e89b32c6dcc9def8cc314fde158",
-				"dweb:/ipfs/QmVfTJjkm9z5apK7W7cGCM4QKhQautRVgDnWSzAsmhV3r5"
+				"bzz-raw://70bda7e3620884ce127ff4684308fc0ca45bc83d2dc6b9cf18e1bedba9fec916",
+				"dweb:/ipfs/QmNtgRxswe2VnRhQMnXSPocxdeHKy8RF2VRTc5EJn61C5H"
 			]
 		},
 		"hardhat/console.sol": {

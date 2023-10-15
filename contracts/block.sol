@@ -1,10 +1,12 @@
 // SPDX-License-Identifier: MIT
 
-// Сделать функционал передачи оставшихся коинов; Сделать переводы оставшихся коинов на leftBalOwner.
-// Сделать покупку токенов одной функцией
-
-// ПОФИКСИТЬ СОЗДАНИЕ РЕКВЕСТОВ НА ДОБАВЛЕНИЕ В ВАЙТ ЛИСТ
-
+// Убрать глобальные     
+    //uint private  privateTokens = totalCoins * 30 / 100;
+    // uint private  publicTokens = totalCoins * 60 / 100;
+    // uint private  publicPrice = 0.001 ether; 
+// amount сразу в нулях 
+// убрать timeSystem
+// getter на вайтлист, баланс(address), реквесВайтлиста, getter countler перевода провайдера 
 pragma solidity ^0.8.21;
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "hardhat/console.sol";
@@ -23,7 +25,7 @@ contract CryptoMonster is ERC20("CryptoMonster", "CMON") {
 
     enum Role {User, Private, Public, Owner}
     enum Phase {Seed, Privat, Public}
-    enum ReqStatus{Denied, Accepted, UnderReview}
+    enum ReqStatus{Denied, Accepted, UnderReview} // поменять на bool
 
     struct Ticket {
         string name;
@@ -44,8 +46,10 @@ contract CryptoMonster is ERC20("CryptoMonster", "CMON") {
 
     mapping(address => User) private users;
     mapping(string => address) private logins;
-    mapping(address => bytes32) public passwords;
+    mapping(address => bytes32) public passwords; // Сделать на string (login)
     mapping(address => Ticket) public requests;
+    // Переделать request на массивы
+    // Массив из вайтлистов 
 
 
     //Shanghai
@@ -115,20 +119,20 @@ contract CryptoMonster is ERC20("CryptoMonster", "CMON") {
         }
     }
 
-    // Сделать проверку на юзера в системе через AccessControl !!!!!!!!!!!!!!!!!!!!!!!!
     function registration(string memory _login, string memory _password) external {
+        require(logins[_login] == address(0), unicode"Пользователь с таким логином уже существует");
+        require(users[msg.sender].wallet == address(0), unicode"Пользователь с таким адресом уже существует");
         users[msg.sender] = User(false, _login, Role.User, msg.sender, 0, 0, 0);
         logins[_login] = msg.sender;
         passwords[msg.sender] = keccak256(abi.encode(_password));
     }
 
     function login(string memory _login, string memory _password) external view returns(User memory) {
-        require(logins[_login] == address(0), unicode"Пользователь с таким логином уже существует");
-        require(users[msg.sender].wallet == address(0), unicode"Пользователь с таким адресом уже существует");
+        // Убрать msg.sender
         string memory storedLogin = users[msg.sender].login;
-        require(keccak256(abi.encode(_login)) == keccak256(abi.encode(storedLogin)));
+        require(keccak256(abi.encode(_login)) == keccak256(abi.encode(storedLogin))); // Убрать 
         require(keccak256(abi.encode(_password)) == passwords[msg.sender]);
-        return users[msg.sender];
+        return users[logins[_login]]; 
     }
 
     function makePrivateReq(string memory _name) external {
@@ -140,23 +144,29 @@ contract CryptoMonster is ERC20("CryptoMonster", "CMON") {
 
     function approveWhiteList(address _user, ReqStatus _status) external AccesControl(Role.Private) {
         require(_status != ReqStatus.UnderReview, unicode"Укажите Accepted или Denied");
+        // переделать на bool
         
         if(_status == ReqStatus.Accepted) {
             users[_user].whiteList = true;
         }
         else {
-            requests[_user].status = ReqStatus.Denied;
+            delete requests[_user].status;
         }
     }
 
     function giveCoinsFromOwner(uint _amount, address _user) external AccesControl(Role.Owner) {
         require(leftBalOwner > 0, unicode"У вас нет остаточных коинов");
         _transfer(msg.sender, _user, _amount * 10 **decimals());
+        // В одну функцию 
     }
 
     function sendTokensToProvier(uint _amount, address _provider) external AccesControl(Role.Owner){
         require(_amount > 0, unicode"Кол-во не может быть 0 или меньше 0"); 
         _transfer(msg.sender, _provider, _amount);
+        // Перевод по фазам 
+        // Сделать countler
+        //
+
     }
 
     function payReward(uint _amount, address _user) external AccesControl(Role.Public) {
@@ -166,9 +176,10 @@ contract CryptoMonster is ERC20("CryptoMonster", "CMON") {
     }
 
     function sendToken(address _to, uint _amount, Phase _phase) external {
-        // А нахуя мы отправляем в структуры токены из разных фаз??
         require(_amount > 0, unicode"Кол-во не может быть 0 или меньше 0"); 
         _amount = _amount * 10 ** decimals();
+        // Перевод от овнера
+        // если получает овнер, то сумму в leftbalowner
 
         if(_phase == Phase.Privat) {
             require(users[msg.sender].privateBal >= _amount, unicode"У вас недостаточно токенов");
@@ -190,13 +201,15 @@ contract CryptoMonster is ERC20("CryptoMonster", "CMON") {
         }
     }
 
-    function buyToken(uint _amount) public {
+    function buyToken(uint _amount) public payable{
         _amount = _amount * 10 ** decimals();
         require(checkTime() > 5 * 60, unicode"Идёт подготовительная фаза");
         require(_amount > 0, unicode"Кол-во не может быть 0 или меньше 0"); 
         require(users[0xAb8483F64d9C6d1EcF9b849Ae677dD3315835cb2].privateBal > 0, unicode"Токены закончились");
         require(users[0x4B20993Bc481177ec7E8f571ceCaE8A9e22C02db].publicBal > 0, unicode"Токены закончились");
-        _transfer(owner, msg.sender, _amount);
+        
+        uint tokenPrice = getTokenPrice();
+        // Проверка: Хватает ли 
 
         if(getTokenPrice() == 0.0075 ether) {
             users[msg.sender].privateBal += _amount;
@@ -211,7 +224,7 @@ contract CryptoMonster is ERC20("CryptoMonster", "CMON") {
             publicTokens -= _amount;
         }
 
-        payable(msg.sender).transfer(_amount * getTokenPrice());
+        payable(owner).transfer(msg.value);
     }
 
 
