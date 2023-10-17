@@ -297,6 +297,21 @@
 						"internalType": "uint256",
 						"name": "",
 						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
 					}
 				],
 				"stateMutability": "view",
@@ -365,19 +380,9 @@
 					{
 						"components": [
 							{
-								"internalType": "bool",
-								"name": "whiteList",
-								"type": "bool"
-							},
-							{
 								"internalType": "string",
-								"name": "login",
+								"name": "name",
 								"type": "string"
-							},
-							{
-								"internalType": "enum CryptoMonster.Role",
-								"name": "role",
-								"type": "uint8"
 							},
 							{
 								"internalType": "address",
@@ -385,22 +390,12 @@
 								"type": "address"
 							},
 							{
-								"internalType": "uint256",
-								"name": "seedBal",
-								"type": "uint256"
-							},
-							{
-								"internalType": "uint256",
-								"name": "privateBal",
-								"type": "uint256"
-							},
-							{
-								"internalType": "uint256",
-								"name": "publicBal",
-								"type": "uint256"
+								"internalType": "bool",
+								"name": "status",
+								"type": "bool"
 							}
 						],
-						"internalType": "struct CryptoMonster.User[]",
+						"internalType": "struct CryptoMonster.Ticket[]",
 						"name": "",
 						"type": "tuple[]"
 					}
@@ -832,11 +827,11 @@
 			]
 		},
 		"contracts/block.sol": {
-			"keccak256": "0x3d9f494251e0dcb0a791cce026d3d9a9250a07bad6d50bb98cafc9dc3dd434f5",
+			"keccak256": "0xbdec4e2df35924e02edd9ed83c0d002c77dcee5a804d0ecb0004d5f1d4bdfc7b",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://37a945c56de5a27d07db50421bc6c9ff8eced95221c96de1ee7e2a652456f2ce",
-				"dweb:/ipfs/QmUeQK2XS5aCXJAGsK7q7uodgCy1Ts7ofCL16LCQcXBam9"
+				"bzz-raw://fb59f3dc1b45d02a32aedce32aef58b426dc1f7f5a943300e94cab8c664bf4c9",
+				"dweb:/ipfs/QmPh59HyZrGUsMaVxzgz2dpxZdWhyig3E5LJ1Ex64xEJB2"
 			]
 		},
 		"hardhat/console.sol": {

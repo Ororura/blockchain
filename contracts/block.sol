@@ -1,9 +1,5 @@
 // SPDX-License-Identifier: MIT
 
-// Перевод остатка на leftBal
-// getter на вайтлист, баланс(address), реквесВайтлиста, getter counter перевода провайдера 
-
-
 pragma solidity ^0.8.21;
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "hardhat/console.sol";
@@ -11,7 +7,7 @@ import "hardhat/console.sol";
 contract CryptoMonster is ERC20("CryptoMonster", "CMON") {
     uint private  totalCoins = 10_000_000 * 10 ** decimals();
     uint private  publicPrice = 0.001 ether;
-    uint private  leftBalOwner = 100000 * 10 ** decimals();
+    uint private  leftBalOwner = 100_000 * 10 ** decimals();
     uint private  timeStart;
     uint private  timeDif;
     uint private providerTransactCounter;
@@ -41,13 +37,13 @@ contract CryptoMonster is ERC20("CryptoMonster", "CMON") {
     mapping(string => address) private logins;
     mapping(string => bytes32) public passwords; 
     Ticket[] requests;
-    User[] whiteList; // Ticket вместо User[]
+    Ticket[] whiteList; 
 
 
     //Shanghai
     constructor() {
         owner = msg.sender;
-        users[msg.sender] = User(true, "owner", Role.Owner, msg.sender, 0, 0, 0);
+        users[msg.sender] = User(true, "owner", Role.Owner, msg.sender, 0, totalCoins * 30 / 100, totalCoins * 60 / 100);
         timeStart = block.timestamp;
         _mint(msg.sender, totalCoins);
         users[0xAb8483F64d9C6d1EcF9b849Ae677dD3315835cb2] = User(true, "private", Role.Private, 0xAb8483F64d9C6d1EcF9b849Ae677dD3315835cb2, 0, 0, 0);
@@ -61,7 +57,7 @@ contract CryptoMonster is ERC20("CryptoMonster", "CMON") {
         _transfer(msg.sender, 0x17F6AD8Ef982297579C203069C1DbfFE4348c372, 200000 * 10 ** decimals());
     }
 
-    modifier AccesControl(Role _role) { // access
+    modifier AccessControl(Role _role) { 
         require(users[msg.sender].role == _role, unicode"Ваша роль не позволяет это использовать");
         _;
     }
@@ -80,7 +76,7 @@ contract CryptoMonster is ERC20("CryptoMonster", "CMON") {
         timeDif += 60;
     }
 
-    function changePublicPrice(uint _newPrice) external AccesControl(Role.Public) {
+    function changePublicPrice(uint _newPrice) external AccessControl(Role.Public) {
         publicPrice = _newPrice;
     }
 
@@ -88,16 +84,15 @@ contract CryptoMonster is ERC20("CryptoMonster", "CMON") {
         return providerTransactCounter;
     }
 
-    function getWhiteList() external view returns(User[] memory) { // Access Private Provider
+    function getWhiteList() external view AccessControl(Role.Private) returns(Ticket[] memory) {
         return whiteList;
     }
 
-    function getRequestWhiteList() external view returns(Ticket[] memory) { // Access Private Provider
+    function getRequestWhiteList() external view AccessControl(Role.Private) returns(Ticket[] memory) { 
         return requests;
     }
 
-    function getPhaseBalance (Phase _phase) external view returns(uint) {
-        // Вернуть ВСЕ балансы (эфиры)
+    function getPhaseBalance (Phase _phase) external view returns(uint, uint, uint, uint) {
         uint bal;
         if(_phase == Phase.Private) {
             bal = users[msg.sender].privateBal;
@@ -108,7 +103,7 @@ contract CryptoMonster is ERC20("CryptoMonster", "CMON") {
         if(_phase == Phase.Seed) {
             bal = users[msg.sender].seedBal;
         }
-        return bal;
+        return (users[msg.sender].privateBal, users[msg.sender].publicBal, users[msg.sender].seedBal, balanceOf(msg.sender));
 
     }
 
@@ -124,9 +119,9 @@ contract CryptoMonster is ERC20("CryptoMonster", "CMON") {
         return price;
     }
 
-    function updateLeftBalOwner () external AccesControl(Role.Owner) {
+    function updateLeftBalOwner () external AccessControl(Role.Owner) {
         if(checkTime() > 15 * 60) {
-            // _transfer
+            _transfer(0xAb8483F64d9C6d1EcF9b849Ae677dD3315835cb2, owner, users[0xAb8483F64d9C6d1EcF9b849Ae677dD3315835cb2].privateBal);
             leftBalOwner += users[0xAb8483F64d9C6d1EcF9b849Ae677dD3315835cb2].privateBal;
             users[0xAb8483F64d9C6d1EcF9b849Ae677dD3315835cb2].privateBal = 0; 
         }
@@ -144,12 +139,12 @@ contract CryptoMonster is ERC20("CryptoMonster", "CMON") {
     }
 
     function login(string memory _login, string memory _password) external view returns(User memory) {
-        require(keccak256(abi.encode(_password)) == passwords[_login]); // Добавить ошибку 
+        require(keccak256(abi.encode(_password)) == passwords[_login], unicode"Неверный пароль"); // Добавить ошибку 
         return users[logins[_login]]; 
     }
 
     function makePrivateReq(string memory _name) external {
-        require(checkTime() < 5, unicode""); // Дописать ошибку
+        require(checkTime() < 5, unicode"Приватная фаза ещё не началась");
         require(!users[msg.sender].whiteList, unicode"Вы уже в white листе");
         for(uint i; i < requests.length; i++){
             require(requests[i].wallet != msg.sender, unicode"Вы уже отправили запрос");
@@ -157,50 +152,43 @@ contract CryptoMonster is ERC20("CryptoMonster", "CMON") {
         requests.push(Ticket(_name, msg.sender, false));
     }
 
-    function approveWhiteList(uint _id, bool _status) external AccesControl(Role.Private) {
+    function approveWhiteList(uint _id, bool _status) external AccessControl(Role.Private) {
         if(_status) {
             users[requests[_id].wallet].whiteList = true;
-            whiteList.push(users[requests[_id].wallet]);
+            whiteList.push(requests[_id]);
         }
         else {
             delete requests[_id];
         }
     }
 
-    function sendTokensToProvier() external AccesControl(Role.Owner){
+    function sendTokensToProvier() external AccessControl(Role.Owner){
         providerTransactCounter ++;
         if(checkTime() > 5 * 60) {
             users[0xAb8483F64d9C6d1EcF9b849Ae677dD3315835cb2].privateBal += totalCoins * 30 / 100;
             _transfer(owner, 0xAb8483F64d9C6d1EcF9b849Ae677dD3315835cb2, totalCoins * 30 / 100);
-            // Снимать у овнера
+            users[owner].privateBal -= totalCoins * 30 / 100;
+            // Переводим остатки с фаз
+            leftBalOwner += 100_000 * 10 ** decimals();
         }
         if(checkTime() > 15 * 60) {
             users[0x4B20993Bc481177ec7E8f571ceCaE8A9e22C02db].publicBal += totalCoins * 60 / 100;
             _transfer(owner, 0x4B20993Bc481177ec7E8f571ceCaE8A9e22C02db, totalCoins * 60 / 100);
-            // Снимать у овнера
+            users[owner].privateBal -= totalCoins * 60 / 100;
+            // Переводим остатки с фаз
+            leftBalOwner += users[0xAb8483F64d9C6d1EcF9b849Ae677dD3315835cb2].privateBal;
+            users[0xAb8483F64d9C6d1EcF9b849Ae677dD3315835cb2].privateBal = 0; 
         }
-
-    //         function updateLeftBalOwner () external AccesControl(Role.Owner) {
-    //     if(checkTime() > 15 * 60) {
-    //         // _transfer
-    //         leftBalOwner += users[0xAb8483F64d9C6d1EcF9b849Ae677dD3315835cb2].privateBal;
-    //         users[0xAb8483F64d9C6d1EcF9b849Ae677dD3315835cb2].privateBal = 0; 
-    //     }
-    //     else if(checkTime() > 5 * 60) {   
-    //         leftBalOwner += 100_000 * 10 ** decimals();
-    //     }
-    // }
     }
 
-    function payReward(uint _amount, address _user) external AccesControl(Role.Public) {
-        // Есть ли у publicProvider на балансе 
+    function payReward(uint _amount, address _user) external AccessControl(Role.Public) {
+        require(users[0x4B20993Bc481177ec7E8f571ceCaE8A9e22C02db].privateBal >= _amount);
         _transfer(msg.sender, _user, _amount);
         users[0x4B20993Bc481177ec7E8f571ceCaE8A9e22C02db].publicBal -= _amount;
-        // Добавить юзеру токены
+        users[_user].publicBal += _amount;
     }
 
     function sendToken(address _to, uint _amount, Phase _phase) external {
-        // Перевод остаточных коинов
         if(msg.sender == owner) {
             require(leftBalOwner >= _amount, unicode"У вас нет остаточных коинов");
             leftBalOwner -= _amount;
@@ -239,7 +227,7 @@ contract CryptoMonster is ERC20("CryptoMonster", "CMON") {
         uint totalPrice = (_amount / 10 ** decimals()) * getTokenPrice(); 
 
         if(getTokenPrice() == 0.0075 ether) {
-            // Сделать проверку на вайт лист 
+            require(users[msg.sender].whiteList, unicode"Вас нет в ВайтЛисте");
             users[msg.sender].privateBal += _amount;
             users[0xAb8483F64d9C6d1EcF9b849Ae677dD3315835cb2].privateBal -= _amount;
             _transfer(0xAb8483F64d9C6d1EcF9b849Ae677dD3315835cb2, msg.sender, _amount);
@@ -249,7 +237,7 @@ contract CryptoMonster is ERC20("CryptoMonster", "CMON") {
             users[0x4B20993Bc481177ec7E8f571ceCaE8A9e22C02db].publicBal -= _amount;
             _transfer(0x4B20993Bc481177ec7E8f571ceCaE8A9e22C02db, msg.sender, _amount);
         } else {
-            revert(unicode"Нельзя купить токены "); // seed фаза
+            revert(unicode"Нельзя купить токены в подготовительную фазу");
         }
         require(msg.value >= totalPrice, unicode"Недостаточно отправленной валюты");
 
