@@ -303,6 +303,19 @@
 				"type": "function"
 			},
 			{
+				"inputs": [],
+				"name": "getProviderTransactCounter",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
 				"inputs": [
 					{
 						"internalType": "uint256",
@@ -837,11 +850,11 @@
 			]
 		},
 		"contracts/block.sol": {
-			"keccak256": "0xddac9ac3f35c93caad1428fdbfc0abdbce5697a8575a4939d7d622a80dbe0e96",
+			"keccak256": "0xeb45bbad1014f0dfcb30c3f9e9b917c5e4c44103ff97fc53b6a73bcf526f5dc9",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://30260ade32b7e4ce874a25f160ebf9cd5e7115fad65ad3c2e6e12a64b7d09957",
-				"dweb:/ipfs/QmfXYwCSjdD6jXvcDFesY7iQfAn4f1a5MWBy3h8kqH52eh"
+				"bzz-raw://ac82a0b965788c83703a7811403e25dca7390ac82c64ee07d5ba62def9fae39d",
+				"dweb:/ipfs/QmZvUDD5p1QTYcChYnEjFZUBUZtMnByxefKR8xnVpK7bR7"
 			]
 		},
 		"hardhat/console.sol": {

@@ -68,7 +68,6 @@ contract CryptoMonster is ERC20("CryptoMonster", "CMON") {
         return 12;
     }
 
-
     function checkTime() public view returns(uint){
         uint timeCycle = (block.timestamp + timeDif - timeStart);
         console.log(timeCycle);
@@ -83,7 +82,11 @@ contract CryptoMonster is ERC20("CryptoMonster", "CMON") {
         publicPrice = _newPrice;
     }
 
-    function getWhiteList(uint _id) public view returns(User memory) {
+    function getProviderTransactCounter () external view returns(uint) {
+        return providerTransactCounter;
+    }
+
+    function getWhiteList(uint _id) external view returns(User memory) {
         return whiteList[_id];
     }
 
@@ -91,7 +94,7 @@ contract CryptoMonster is ERC20("CryptoMonster", "CMON") {
         return requests[_id];
     }
 
-    function getPhaseBalance (Phase _phase) public view returns(uint) {
+    function getPhaseBalance (Phase _phase) external view returns(uint) {
         uint bal;
         if(_phase == Phase.Private) {
             bal = users[msg.sender].privateBal;
@@ -214,24 +217,28 @@ contract CryptoMonster is ERC20("CryptoMonster", "CMON") {
         }
     }
 
-    function buyToken(uint _amount) public payable{
+    function buyToken(uint _amount) external payable{
         require(checkTime() > 5 * 60, unicode"Идёт подготовительная фаза");
         require(_amount > 0, unicode"Кол-во не может быть 0 или меньше 0"); 
         require(users[0xAb8483F64d9C6d1EcF9b849Ae677dD3315835cb2].privateBal > 0, unicode"Токены закончились");
         require(users[0x4B20993Bc481177ec7E8f571ceCaE8A9e22C02db].publicBal > 0, unicode"Токены закончились");
-        
-        // Проверка: Хватает ли 
+        // Проверка: Хватает ли
+        uint totalPrice; 
 
         if(getTokenPrice() == 0.0075 ether) {
+            totalPrice = _amount * getTokenPrice();
+
             users[msg.sender].privateBal += _amount;
             users[0xAb8483F64d9C6d1EcF9b849Ae677dD3315835cb2].privateBal -= _amount;
             _transfer(0xAb8483F64d9C6d1EcF9b849Ae677dD3315835cb2, msg.sender, _amount);
         }
         else {
+            totalPrice = _amount * getTokenPrice();
             users[msg.sender].publicBal += _amount;
             users[0x4B20993Bc481177ec7E8f571ceCaE8A9e22C02db].publicBal -= _amount;
             _transfer(0x4B20993Bc481177ec7E8f571ceCaE8A9e22C02db, msg.sender, _amount);
         }
+        require(msg.value >= totalPrice, unicode"Недостаточно отправленной валюты");
 
         payable(owner).transfer(msg.value);
     }
