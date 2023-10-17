@@ -316,13 +316,7 @@
 				"type": "function"
 			},
 			{
-				"inputs": [
-					{
-						"internalType": "uint256",
-						"name": "_id",
-						"type": "uint256"
-					}
-				],
+				"inputs": [],
 				"name": "getRequestWhiteList",
 				"outputs": [
 					{
@@ -343,9 +337,9 @@
 								"type": "bool"
 							}
 						],
-						"internalType": "struct CryptoMonster.Ticket",
+						"internalType": "struct CryptoMonster.Ticket[]",
 						"name": "",
-						"type": "tuple"
+						"type": "tuple[]"
 					}
 				],
 				"stateMutability": "view",
@@ -365,13 +359,7 @@
 				"type": "function"
 			},
 			{
-				"inputs": [
-					{
-						"internalType": "uint256",
-						"name": "_id",
-						"type": "uint256"
-					}
-				],
+				"inputs": [],
 				"name": "getWhiteList",
 				"outputs": [
 					{
@@ -412,9 +400,9 @@
 								"type": "uint256"
 							}
 						],
-						"internalType": "struct CryptoMonster.User",
+						"internalType": "struct CryptoMonster.User[]",
 						"name": "",
-						"type": "tuple"
+						"type": "tuple[]"
 					}
 				],
 				"stateMutability": "view",
@@ -593,13 +581,7 @@
 				"type": "function"
 			},
 			{
-				"inputs": [
-					{
-						"internalType": "uint256",
-						"name": "_minutes",
-						"type": "uint256"
-					}
-				],
+				"inputs": [],
 				"name": "skipTime",
 				"outputs": [],
 				"stateMutability": "nonpayable",
@@ -850,11 +832,11 @@
 			]
 		},
 		"contracts/block.sol": {
-			"keccak256": "0xeb45bbad1014f0dfcb30c3f9e9b917c5e4c44103ff97fc53b6a73bcf526f5dc9",
+			"keccak256": "0x3d9f494251e0dcb0a791cce026d3d9a9250a07bad6d50bb98cafc9dc3dd434f5",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://ac82a0b965788c83703a7811403e25dca7390ac82c64ee07d5ba62def9fae39d",
-				"dweb:/ipfs/QmZvUDD5p1QTYcChYnEjFZUBUZtMnByxefKR8xnVpK7bR7"
+				"bzz-raw://37a945c56de5a27d07db50421bc6c9ff8eced95221c96de1ee7e2a652456f2ce",
+				"dweb:/ipfs/QmUeQK2XS5aCXJAGsK7q7uodgCy1Ts7ofCL16LCQcXBam9"
 			]
 		},
 		"hardhat/console.sol": {
