@@ -573,18 +573,7 @@
 				"type": "function"
 			},
 			{
-				"inputs": [
-					{
-						"internalType": "uint256",
-						"name": "_amount",
-						"type": "uint256"
-					},
-					{
-						"internalType": "address",
-						"name": "_provider",
-						"type": "address"
-					}
-				],
+				"inputs": [],
 				"name": "sendTokensToProvier",
 				"outputs": [],
 				"stateMutability": "nonpayable",
@@ -848,11 +837,11 @@
 			]
 		},
 		"contracts/block.sol": {
-			"keccak256": "0x65394903ea42c12addfa00412b7e08d0bf131f5efef76b358d45b9cd11867b98",
+			"keccak256": "0xddac9ac3f35c93caad1428fdbfc0abdbce5697a8575a4939d7d622a80dbe0e96",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://b03905d52098a796fd9061c63b418029602d4e9c15a3d7567ab5dba5f90f1dc8",
-				"dweb:/ipfs/QmQ1sX28fGFntNJuNvcihWKQLQtidP7didFQ5LMPyi7fTf"
+				"bzz-raw://30260ade32b7e4ce874a25f160ebf9cd5e7115fad65ad3c2e6e12a64b7d09957",
+				"dweb:/ipfs/QmfXYwCSjdD6jXvcDFesY7iQfAn4f1a5MWBy3h8kqH52eh"
 			]
 		},
 		"hardhat/console.sol": {

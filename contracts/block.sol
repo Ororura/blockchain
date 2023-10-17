@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 
 // Перевод остатка на leftBal
-// getter на вайтлист, баланс(address), реквесВайтлиста, getter countler перевода провайдера 
+// getter на вайтлист, баланс(address), реквесВайтлиста, getter counter перевода провайдера 
 pragma solidity ^0.8.21;
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "hardhat/console.sol";
@@ -12,6 +12,7 @@ contract CryptoMonster is ERC20("CryptoMonster", "CMON") {
     uint private  leftBalOwner = 100000 * 10 ** decimals();
     uint private  timeStart;
     uint private  timeDif;
+    uint private providerTransactCounter;
     address private owner;
 
     enum Role {User, Private, Public, Owner}
@@ -160,16 +161,16 @@ contract CryptoMonster is ERC20("CryptoMonster", "CMON") {
         }
     }
 
-    function sendTokensToProvier(uint _amount, address _provider) external AccesControl(Role.Owner){
-        require(_amount > 0, unicode"Кол-во не может быть 0 или меньше 0"); 
-        _transfer(msg.sender, _provider, _amount);
-        if(checkTime() > 5) {
-
+    function sendTokensToProvier() external AccesControl(Role.Owner){
+        providerTransactCounter ++;
+        if(checkTime() > 5 * 60) {
+            users[0xAb8483F64d9C6d1EcF9b849Ae677dD3315835cb2].privateBal += totalCoins * 30 / 100;
+            _transfer(owner, 0xAb8483F64d9C6d1EcF9b849Ae677dD3315835cb2, totalCoins * 30 / 100);
         }
-        // Перевод по фазам 
-        // Сделать countler
-        // 
-
+        if(checkTime() > 15 * 60) {
+            users[0x4B20993Bc481177ec7E8f571ceCaE8A9e22C02db].privateBal += totalCoins * 30 / 100;
+            _transfer(owner, 0x4B20993Bc481177ec7E8f571ceCaE8A9e22C02db, totalCoins * 30 / 100);
+        }
     }
 
     function payReward(uint _amount, address _user) external AccesControl(Role.Public) {
@@ -181,11 +182,11 @@ contract CryptoMonster is ERC20("CryptoMonster", "CMON") {
     function sendToken(address _to, uint _amount, Phase _phase) external {
         require(_amount > 0, unicode"Кол-во не может быть 0 или меньше 0"); 
         _amount = _amount * 10 ** decimals();
-        // Перевод от овнера
-        // если получает овнер, то сумму в leftbalowner
 
+        // Перевод остаточных коинов
         if(msg.sender == owner) {
             require(leftBalOwner > 0, unicode"У вас нет остаточных коинов");
+            leftBalOwner -= _amount;
             _transfer(msg.sender, _to, _amount);
         }
 
