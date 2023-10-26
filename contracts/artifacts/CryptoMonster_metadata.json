@@ -1,6 +1,6 @@
 {
 	"compiler": {
-		"version": "0.8.21+commit.d9974bed"
+		"version": "0.8.22+commit.4fc1097e"
 	},
 	"language": "Solidity",
 	"output": {
@@ -597,6 +597,19 @@
 			},
 			{
 				"inputs": [],
+				"name": "timeStart",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
 				"name": "totalSupply",
 				"outputs": [
 					{
@@ -658,13 +671,6 @@
 						"type": "bool"
 					}
 				],
-				"stateMutability": "nonpayable",
-				"type": "function"
-			},
-			{
-				"inputs": [],
-				"name": "updateLeftBalOwner",
-				"outputs": [],
 				"stateMutability": "nonpayable",
 				"type": "function"
 			}
@@ -827,11 +833,11 @@
 			]
 		},
 		"contracts/block.sol": {
-			"keccak256": "0xbdec4e2df35924e02edd9ed83c0d002c77dcee5a804d0ecb0004d5f1d4bdfc7b",
+			"keccak256": "0x6e5d932a422978f2aab9b92dedf6734c2972ed096bea40e3c7326d9d46c3e57f",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://fb59f3dc1b45d02a32aedce32aef58b426dc1f7f5a943300e94cab8c664bf4c9",
-				"dweb:/ipfs/QmPh59HyZrGUsMaVxzgz2dpxZdWhyig3E5LJ1Ex64xEJB2"
+				"bzz-raw://72a93d230b3de30a346dfe5312beb776ed330f23cbfe680327a08249cee3599e",
+				"dweb:/ipfs/QmRAyfvM4Gt62My8yTbpJSMup1FiShAtNLjRP9NQEZ8PJD"
 			]
 		},
 		"hardhat/console.sol": {
