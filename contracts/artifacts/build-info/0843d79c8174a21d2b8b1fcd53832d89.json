@@ -1,0 +1,71 @@
+{
+	"id": "0843d79c8174a21d2b8b1fcd53832d89",
+	"_format": "hh-sol-build-info-1",
+	"solcVersion": "0.8.22",
+	"solcLongVersion": "0.8.22+commit.4fc1097e",
+	"input": {
+		"language": "Solidity",
+		"sources": {
+			"contracts/block2.sol": {
+				"content": "// // SPDX-License-Identifier: MIT\n\n// // Сделать функционал передачи оставшихся коинов; Сделать переводы оставшихся коинов на leftBalOwner.\n// // Сделать покупку токенов одной функцией\n// // Переводы, \n// // Вайтлист, добавить проверки фаз, есть ли в листе\n\n\n// // Функция по возврату цены токена\n// // покупку в одну функцию \n// // Переводы между юзерами\n// // Переводы от овнера провайдеру\n// //\n// pragma solidity ^0.8.21;\n// import \"@openzeppelin/contracts/token/ERC20/ERC20.sol\";\n// import \"hardhat/console.sol\";\n\n// contract CryptoMonster is ERC20(\"CryptoMonster\", \"CMON\") {\n//     uint private  totalCoins = 10000000 * 10 ** decimals();\n//     uint private  seedCoins = totalCoins * 10 / 100;\n//     uint private  privateCoins = totalCoins * 30 / 100;\n//     uint private  pubCoins = totalCoins * 60 / 100;\n\n//     uint private  leftBalOwner;\n//     uint private  publicPrice = 0.001 ether;\n//     uint private  timeStart;\n//     uint private  timeDif = 0;\n//     uint private  timeSystem;\n//     address private  owner;\n\n//     enum Role {User, Private, Public, Owner}\n//     enum Phase {Seed, Private, Public}\n\n//     struct Ticket {\n//         string name;\n//         address usrAddress;\n//         bool status;\n//     }\n\n//     struct User {\n//         string login;\n//         Role role;\n//         address adr;\n//         //3 баланса + вайт лист \n//     }\n\n\n//     mapping(address => User) private users;\n//     mapping(string => bytes32) private passwords;\n//     Ticket[] private requests;\n//     address[] private whiteList;\n\n//     //Shanghai\n//     constructor() {\n//         owner = msg.sender;\n//         users[msg.sender] = User(\"owner\", \"owner\", Role.Owner, msg.sender);\n//         timeStart = block.timestamp;\n//         timeSystem = timeStart;\n//         _mint(msg.sender, totalCoins);\n\n//         users[0xAb8483F64d9C6d1EcF9b849Ae677dD3315835cb2] = User(\"private\", \"private\", Role.Private, 0xAb8483F64d9C6d1EcF9b849Ae677dD3315835cb2);\n//         users[0x4B20993Bc481177ec7E8f571ceCaE8A9e22C02db] = User(\"public\", \"public\", Role.Public, 0xAb8483F64d9C6d1EcF9b849Ae677dD3315835cb2);\n//         // Добавить инв в маппинг юзеров\n//         _transfer(msg.sender,0x78731D3Ca6b7E34aC0F824c42a7cC18A495cabaB , 300000 * 10 ** decimals());\n//         seedCoins = seedCoins - 300000 * 10 ** decimals();\n//         _transfer(msg.sender, 0x617F2E2fD72FD9D5503197092aC168c91465E7f2, 400000 * 10 ** decimals());\n//         seedCoins = seedCoins - 400000 * 10 ** decimals();\n//         _transfer(msg.sender, 0x17F6AD8Ef982297579C203069C1DbfFE4348c372, 200000 * 10 ** decimals());\n//         seedCoins = seedCoins - 200000 * 10 ** decimals();\n//     }\n\n//     modifier AccessControl(Role _role) {\n//         require(users[msg.sender].role == _role, unicode\"Ваша роль не позволяет это использовать\");\n//         _;\n//     }\n\n//     function registration(string memory _name, string memory _password, string memory _login) external {\n//         users[msg.sender] = User(_name, _login, Role.User, msg.sender);\n//         passwords[msg.sender] = keccak256(abi.encode(_password));\n//     }\n\n//     function login(string memory _login, string memory _password) external view returns(User memory) {\n//         string memory storedLogin = users[msg.sender].login; // маппинг, который вернёт по логину адр. \n//         require(keccak256(abi.encode(_login)) == keccak256(abi.encode(storedLogin)));\n//         require(keccak256(abi.encode(_password)) == passwords[msg.sender]);\n//         return users[//login];\n//     }\n\n//     function decimals() public pure override returns (uint8) {\n//         return 12;\n//     }\n\n//     function checkTime() public returns(uint) {\n//         timeSystem = block.timestamp + timeDif;\n//         uint timeCycle = (timeSystem - timeStart) / 60;\n//         console.log(timeCycle);\n//         return timeCycle;\n//     }\n\n//     function setPhase() public returns(Phase) {\n\n//     }\n\n//     function updateLeftBalOwner () external  {\n//         if(checkTime() > 5) {\n//             leftBalOwner += seedCoins;\n//         }\n//         if(checkTime() > 15) {\n//             leftBalOwner += privateCoins;\n//         }\n//     }\n\n//     function skipTime(uint _minutes) public {\n//         timeDif += _minutes * 60;\n//     }\n\n//     function giveCoinsFromOwner(uint _amount, address _user) external AccessControl(Role.Owner) {\n//         require(leftBalOwner > 0, unicode\"У вас нет остаточных коинов\");\n//         _transfer(msg.sender, _user, _amount * 10 **decimals());\n//     }\n\n//     function payReward(uint _amount, address _user) external AccessControl(Role.Public) {\n//         _transfer(msg.sender, _user, _amount);\n//         pubCoins -= _amount * 10 ** decimals();\n//     }\n\n//     function changePublicPrice(uint _newPrice) external AccessControl(Role.Public) {\n//         publicPrice = _newPrice;\n//     }\n\n//     function makePrivateReq(string memory _name) external {\n\n//         // Есть ли в маппинге + проверка фазы \n//         requests.push(Ticket(//_login, msg.sender));\n//     }\n\n\n//     // Struct {}\n//     function approveWhiteList(uint _idTicket, bool status) external AccessControl(Role.Private) {\n//         if(status) {\n//             whiteList.push(requests[_idTicket].usrAddress);\n//             //bool true в структуре\n//         } \n//         else {\n//             delete requests[_idTicket];\n//         }\n//     }\n\n//                 // _amount * decimals\n//     function buyPrivateToken(uint _amount) external payable {\n//         require(checkTime() >= 5, unicode\"Приватная фаза ещё не началась\");\n//         require(checkTime() <= 15, unicode\"Приватная фаза закончилась\");\n//         require(_amount <= 100000, unicode\"Больше 100000 нельзя купить\");\n//         require(privateCoins > 0, unicode\"Private коины закончились\");\n\n//         bool isWhiteListed = false;\n//         for(uint i; i < whiteList.length; i++) {\n//             if(msg.sender == whiteList[i]) {\n//                 isWhiteListed = true;\n//             }\n//         }\n//         require(isWhiteListed, unicode\"Free sale not started\");\n//         _transfer(owner, msg.sender, _amount * 10 ** decimals());\n//         privateCoins -= _amount * 10 ** decimals();\n//         payable(msg.sender).transfer(_amount * 750000000000000);\n//     }\n\n//     function buyPublicToken(uint _amount) external payable {\n//         require(checkTime() >= 10, unicode\"Public фаза ещё не началась\");\n//         require(_amount <= 5000, unicode\"Больше 5000 нельзя купить\");\n//         require(pubCoins > 0, unicode\"Public коины закончились\");\n//         _transfer(owner, msg.sender, _amount * 10 ** decimals());\n//         pubCoins -= _amount * 10 ** decimals();\n//         payable(msg.sender).transfer(_amount * publicPrice);\n//     }\n// // return цена токена \n//     function buyTokens(uint _amount) external payable {\n//         uint privatePrice = 750000000000000;\n        \n//         require(_amount > 0, unicode\"Кол-во должно быть больше 0\");\n\n//     }\n\n// }"
+			}
+		},
+		"settings": {
+			"optimizer": {
+				"enabled": false,
+				"runs": 200
+			},
+			"outputSelection": {
+				"*": {
+					"": [
+						"ast"
+					],
+					"*": [
+						"abi",
+						"metadata",
+						"devdoc",
+						"userdoc",
+						"storageLayout",
+						"evm.legacyAssembly",
+						"evm.bytecode",
+						"evm.deployedBytecode",
+						"evm.methodIdentifiers",
+						"evm.gasEstimates",
+						"evm.assembly"
+					]
+				}
+			}
+		}
+	},
+	"output": {
+		"errors": [
+			{
+				"component": "general",
+				"errorCode": "3420",
+				"formattedMessage": "Warning: Source file does not specify required compiler version! Consider adding \"pragma solidity ^0.8.22;\"\n--> contracts/block2.sol\n\n",
+				"message": "Source file does not specify required compiler version! Consider adding \"pragma solidity ^0.8.22;\"",
+				"severity": "warning",
+				"sourceLocation": {
+					"end": -1,
+					"file": "contracts/block2.sol",
+					"start": -1
+				},
+				"type": "Warning"
+			}
+		],
+		"sources": {
+			"contracts/block2.sol": {
+				"ast": {
+					"absolutePath": "contracts/block2.sol",
+					"exportedSymbols": {},
+					"id": 1,
+					"license": "MIT",
+					"nodeType": "SourceUnit",
+					"nodes": [],
+					"src": "7544:0:0"
+				},
+				"id": 0
+			}
+		}
+	}
+}

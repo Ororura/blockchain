@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-
+// Доделать approve
 pragma solidity ^0.8.21;
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "hardhat/console.sol";
@@ -109,6 +109,21 @@ contract CryptoMonster is ERC20("CryptoMonster", "CMON") {
 
     }
 
+    function approveTokensToUsers(address _user, uint _amount) external  {
+        _approve(owner, _user, _amount);
+    }
+
+    function getApproveTokens(address _ownerTokens, uint _amount) external  {
+        _transfer(_ownerTokens, msg.sender, _amount);
+        if(checkTime() >= 5 * 60 && checkTime() < 15 * 60) {
+            users[msg.sender].privateBal += _amount;
+            users[_ownerTokens].privateBal -= _amount;
+        } else {
+            users[msg.sender].publicBal += _amount;
+            users[_ownerTokens].publicBal -= _amount;
+        }
+    }
+
     function getTokenPrice() public view returns(uint) {
         uint price = 0;
         if(checkTime() >= 5 * 60 && checkTime() < 15 * 60) {
@@ -117,7 +132,6 @@ contract CryptoMonster is ERC20("CryptoMonster", "CMON") {
         else if(checkTime() >= 15 * 60) {
             price = publicPrice;
         }
-        console.log(price);
         return price;
     }
 
@@ -137,7 +151,7 @@ contract CryptoMonster is ERC20("CryptoMonster", "CMON") {
     function makePrivateReq(string memory _name) external {
         require(checkTime() < 5, unicode"Приватная фаза ещё не началась");
         require(!users[msg.sender].whiteList, unicode"Вы уже в white листе");
-        for(uint i; i < requests.length; i++){
+        for(uint i; i < requests.length; i++) {
             require(requests[i].wallet != msg.sender, unicode"Вы уже отправили запрос");
         }
         requests.push(Ticket(_name, msg.sender, false));
